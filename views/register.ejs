@@ -1,4 +1,4 @@
-<!--<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
     <title><ex6></title>
@@ -15,35 +15,43 @@
 <div class="row">
     <div class="col-md-5 mx-auto">
         <div class="text-center">
-            <h2>Please Sing in</h2>
+            <h2>Please Register</h2>
         </div>
         <form>
-            <div class="form-floating mb-3">
+            <div class="form-floating ">
                 <div class="input-group">
                 <span class="input-group-text">
                     <i class="bi bi-envelope-at"></i>
                 </span>
-                    <input type="email" class="form-control" id="floatingInput" placeholder="Email address">
+                    <input type="email" class="form-control" id="mail" placeholder="Email address">
+                </div>
+            </div>
+            <div class="form-floating ">
+                <div class="input-group">
+                <span class="input-group-text">
+                    <i class="bi bi-person"></i>
+                </span>
+                    <input type="text" class="form-control" id="firstname" placeholder="First Name">
                 </div>
             </div>
             <div class="form-floating">
                 <div class="input-group">
                 <span class="input-group-text">
-                    <i class="bi bi-person-fill-lock"></i>
+                    <i class="bi bi-person-fill"></i>
                 </span>
-                    <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
+                    <input type="text" class="form-control" id="lastname" placeholder="Last Name">
                 </div>
             </div>
             <br>
             <div class="row mx-auto">
-                <button class="btn btn-primary w-100" type="submit">Sign in</button>
+                <a href="/register-password" class="btn btn-primary w-100" type="submit">Next</a>
             </div>
         </form>
         <br>
         <div class="text-center">
-            <p>need to <a href="register.ejs">register?</a></p>
+            <p>already registered? go to <a href="/">login</a> page</p>
         </div>
     </div>
 </div>
 </body>
-</html>-->
+</html>
