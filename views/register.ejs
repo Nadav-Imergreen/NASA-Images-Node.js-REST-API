@@ -17,13 +17,13 @@
         <div class="text-center">
             <h2>Please Register</h2>
         </div>
-        <form>
+        <form action = "/register-password" method="get">
             <div class="form-floating ">
                 <div class="input-group">
                 <span class="input-group-text">
                     <i class="bi bi-envelope-at"></i>
                 </span>
-                    <input type="email" class="form-control" id="mail" placeholder="Email address">
+                    <input type="email" class="form-control" id="mail" placeholder="Email address" required>
                 </div>
             </div>
             <div class="form-floating ">
@@ -31,7 +31,8 @@
                 <span class="input-group-text">
                     <i class="bi bi-person"></i>
                 </span>
-                    <input type="text" class="form-control" id="firstname" placeholder="First Name">
+                    <input type="text" class="form-control" id="firstname" placeholder="First Name"
+                           pattern="[a-z]{3,32}" required>
                 </div>
             </div>
             <div class="form-floating">
@@ -39,12 +40,13 @@
                 <span class="input-group-text">
                     <i class="bi bi-person-fill"></i>
                 </span>
-                    <input type="text" class="form-control" id="lastname" placeholder="Last Name">
+                    <input type="text" class="form-control" id="lastname" placeholder="Last Name"
+                           pattern="[a-z]{3,32}" required>
                 </div>
             </div>
             <br>
             <div class="row mx-auto">
-                <a href="/register-password" class="btn btn-primary w-100" type="submit">Next</a>
+                <button class="btn btn-primary w-100" type="submit">Next</button>
             </div>
         </form>
         <br>
