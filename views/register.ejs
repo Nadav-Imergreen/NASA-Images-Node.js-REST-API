@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title><ex6></title>
+    <title>ex6</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
@@ -17,13 +17,18 @@
         <div class="text-center">
             <h2>Please Register</h2>
         </div>
-        <form action = "/register-password" method="get">
+
+        <% if(mailExists) { %>
+          <p class ="text-center text-danger">Email already registered, try again </p>
+        <% } %>
+
+        <form action = "/register" method="post">
             <div class="form-floating ">
                 <div class="input-group">
                 <span class="input-group-text">
                     <i class="bi bi-envelope-at"></i>
                 </span>
-                    <input type="email" class="form-control" id="mail" placeholder="Email address" required>
+                    <input type="email" class="form-control" id="mail" name ="email" placeholder="Email address" required>
                 </div>
             </div>
             <div class="form-floating ">
