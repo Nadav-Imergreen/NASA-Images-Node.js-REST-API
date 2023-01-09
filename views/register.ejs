@@ -10,7 +10,7 @@
 </head>
 <body>
 <div class="d-flex align-items-center justify-content-center">
-    <img src="<%= imglogo %>" class="mx-auto d-block">
+    <img src="<%= imgLogo %>" class="mx-auto d-block">
 </div>
 <div class="row">
     <div class="col-md-5 mx-auto">
@@ -19,16 +19,17 @@
         </div>
 
         <% if(mailExists) { %>
-          <p class ="text-center text-danger">Email already registered, try again </p>
+            <p class="text-center text-danger">Email already registered, try again </p>
         <% } %>
 
-        <form action = "/register" method="post">
+        <form action="/register" method="post">
             <div class="form-floating ">
                 <div class="input-group">
                 <span class="input-group-text">
                     <i class="bi bi-envelope-at"></i>
                 </span>
-                    <input type="email" class="form-control" id="mail" name ="email" value="<%=email%>" placeholder="Email address" required>
+                    <input type="email" class="form-control" id="mail" name="email" value="<%= email %>"
+                           placeholder="Email address" required>
                 </div>
             </div>
             <div class="form-floating ">
@@ -36,8 +37,9 @@
                 <span class="input-group-text">
                     <i class="bi bi-person"></i>
                 </span>
-                    <input type="text" class="form-control" id="firstname" placeholder="First Name"
-                           pattern="[a-z]{3,32}" required>
+                    <input type="text" class="form-control" id="first name" name="firstName" value="<%= firstName %>"
+                           placeholder="First Name"
+                           pattern="[a-zA-Z ]{3,32}" required>
                 </div>
             </div>
             <div class="form-floating">
@@ -45,8 +47,9 @@
                 <span class="input-group-text">
                     <i class="bi bi-person-fill"></i>
                 </span>
-                    <input type="text" class="form-control" id="lastname" placeholder="Last Name"
-                           pattern="[a-z]{3,32}" required>
+                    <input type="text" class="form-control" id="last name" name="lastName" value="<%= lastName %>"
+                           placeholder="Last Name"
+                           pattern="[a-zA-Z ]{3,32}" required>
                 </div>
             </div>
             <br>
