@@ -15,39 +15,49 @@ router.get('/register/:cookieTime', function (req, res) {
     const cookies = new Cookies(req, res, {keys: keys});
 
     let userDetails = cookies.get('userDetails', {signed: true});
-    let refreshErrors = cookies.get('refreshErrors', {signed: true});
+    let beforeRefresh = cookies.get('refresh', {signed: true});
+    let noCookieFound = cookies.get('noCookieFound', {signed: true});
 
-    if (refreshErrors) {
-        if (userDetails) {
-            let data = JSON.parse(userDetails);
-            res.render('register', {
-                title: 'Express', imgLogo: '/images/0.png', mailExists: true,
-                cookieExpired: false, email: data.email, firstName: data.firstName, lastName: data.lastName
-            });
-        }
+    let data;
+
+    // show error message if mail address already existed
+    if (beforeRefresh && userDetails) {
+        data = JSON.parse(userDetails);
+        res.render('register', {
+            title: 'Express',
+            imgLogo: '/images/0.png',
+            email: data.email,
+            firstName: data.firstName,
+            lastName: data.lastName,
+            mailExists: true,
+            cookieExpired: false
+        });
     }
 
-    if (req.params.cookieTime !== 'expire') // cookie time not expire
-    {
+    // show error message if cookie time expire
+    if (!beforeRefresh && !noCookieFound) {
         if (userDetails) //not first entry
         {
-            let data = JSON.parse(userDetails);
-            // load page content to browser
+            data = JSON.parse(userDetails);
             res.render('register', {
-                title: 'Express', imgLogo: '/images/0.png', mailExists: false,
-                cookieExpired: false, email: data.email, firstName: data.firstName, lastName: data.lastName
+                title: 'Express',
+                imgLogo: '/images/0.png',
+                email: data.email,
+                firstName: data.firstName,
+                lastName: data.lastName,
+                mailExists: false,
+                cookieExpired: false
             });
-        } else // first entry
+        } else   // first entry
             res.render('register', {
                 title: 'Express', imgLogo: '/images/0.png', mailExists: false,
                 cookieExpired: false, email: '', firstName: '', lastName: ''
             });
-    } else // cookie time expire
+    } else    // cookie time expire
         res.render('register', {
             title: 'Express', imgLogo: '/images/0.png', mailExists: false,
             cookieExpired: true, email: '', firstName: '', lastName: ''
         });
-
 });
 
 router.get('/register-password', function (req, res) {
@@ -69,10 +79,8 @@ router.post('/register', function (req, res) {
     cookies.set('userDetails', JSON.stringify(newCookie), {signed: true, maxAge: 10 * 1000});
 
     if (emails.includes(req.body.email)) {
-
         //set new cookie
-        cookies.set('refreshErrors', 'errorExist', {signed: true, maxAge: 1000});
-
+        cookies.set('refresh', 'errorExist', {signed: true, maxAge: 1000});
         res.redirect('/register/notExpire');
     } else
         res.redirect('register-password');
@@ -92,8 +100,12 @@ router.post('/register-password', function (req, res) {
             res.render('index', {title: 'Express', imgLogo: '/images/0.png', RegistrationSucceeded: true});
         } else
             res.render('register-password', {title: 'Express', imgLogo: '/images/0.png', equalPassword: false});
-    } else
-        res.redirect('/register/expire');
+    } else {
+        //set new cookie
+        cookies.set('noCookieFound', 'noCookieFound', {signed: true, maxAge: 1000});
+        res.redirect('/register/notExpire');
+    }
+    // res.redirect('/register/expire');
 
 });
 
