@@ -10,7 +10,7 @@ router.get('/', function (req, res) {
     res.render('index', {title: 'Express', imgLogo: '/images/0.png', RegistrationSucceeded: false});
 });
 
-router.get('/register/:cookieTime', function (req, res) {
+router.get('/register', function (req, res) {
     // get the cookie
     const cookies = new Cookies(req, res, {keys: keys});
 
@@ -81,7 +81,7 @@ router.post('/register', function (req, res) {
     if (emails.includes(req.body.email)) {
         //set new cookie
         cookies.set('refresh', 'errorExist', {signed: true, maxAge: 1000});
-        res.redirect('/register/notExpire');
+        res.redirect('/register');
     } else
         res.redirect('register-password');
 });
@@ -103,7 +103,7 @@ router.post('/register-password', function (req, res) {
     } else {
         //set new cookie
         cookies.set('noCookieFound', 'noCookieFound', {signed: true, maxAge: 1000});
-        res.redirect('/register/notExpire');
+        res.redirect('/register');
     }
     // res.redirect('/register/expire');
 
