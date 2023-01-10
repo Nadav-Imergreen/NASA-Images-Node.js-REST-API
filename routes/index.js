@@ -13,7 +13,13 @@ router.get('/', function (req, res) {
 router.get('/register/:cookieTime', function (req, res) {
     // get the cookie
     const cookies = new Cookies(req, res, {keys: keys});
-    const userDetails = cookies.get('userDetails', {signed: true});
+
+    let userDetails = cookies.get('userDetails', {signed: true});
+    let refreshErrors = cookies.get('refreshErrors', {signed: true});
+
+    if (refreshErrors)
+        res.render('register', {title: 'Express', imgLogo: '/images/0.png', mailExists: true,
+            cookieExpired: false, email:'',   firstName:'', lastName:''});
 
     if (req.params.cookieTime !== 'expire') // cookie time not expire
     {
@@ -47,17 +53,18 @@ router.get('/register-password', function (req, res) {
 router.post('/register', function (req, res) {
 
     const cookies = new Cookies(req, res, {keys: keys})
-    let userDetails = cookies.get('userDetails', {signed: true});
 
-    if (!userDetails) {
-        //set new cookie
-        let newCookie = {email: req.body.email, firstName: req.body.firstName, lastName: req.body.lastName};
-        cookies.set('userDetails', JSON.stringify(newCookie), {signed: true, maxAge: 10 * 1000});
+    // mail already exist
+    let newCookie = {email: req.body.email, firstName: req.body.firstName, lastName: req.body.lastName};
+    cookies.set('userDetails', JSON.stringify(newCookie), {signed: true, maxAge: 10 * 1000});
+
+    if (emails.includes(req.body.email)){
+
+            //set new cookie
+            cookies.set('refreshErrors', 'errorExist', {signed: true, maxAge: 1000});
+
+        res.redirect('/register/notExpire');
     }
-
-    if (emails.includes(req.body.email)) // mail already exist
-        res.render('register', {title: 'Express', imgLogo: '/images/0.png', mailExists: true,
-            cookieExpired: false, email:'', firstName:'', lastName:''});
     else
         res.redirect('register-password');
 });
