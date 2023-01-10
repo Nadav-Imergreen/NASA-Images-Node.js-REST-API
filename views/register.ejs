@@ -19,7 +19,10 @@
         </div>
 
         <% if(mailExists) { %>
-            <p class="text-center text-danger">Email already registered, try again </p>
+            <p class="text-center text-danger">Email already registered, try again</p>
+        <% } %>
+        <% if(cookieExpired) { %>
+            <p class="text-center text-danger">Time expired, please fill your details again</p>
         <% } %>
 
         <form action="/register" method="post">

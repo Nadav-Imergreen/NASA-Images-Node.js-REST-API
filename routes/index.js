@@ -7,54 +7,57 @@ const keys = ['keyboard cat'];
 
 /* GET home page. */
 router.get('/', function (req, res) {
-    res.render('index', {title: 'Express', imgLogo: '/images/0.png'});
+    res.render('index', {title: 'Express', imgLogo: '/images/0.png', RegistrationSucceeded:false});
 });
 
-router.get('/register', function (req, res) {
+router.get('/register/:cookieTime', function (req, res) {
     // get the cookie
     const cookies = new Cookies(req, res, {keys: keys});
     const userDetails = cookies.get('userDetails', {signed: true});
-    if (userDetails)
+
+    if (req.params.cookieTime !== 'expire') // cookie time not expire
     {
-        let data = JSON.parse(userDetails);
-        // load page content to browser
-        res.render('register', {title: 'Express', imgLogo: '/images/0.png', mailExists: false,
-            email: data.email,   firstName: data.firstName, lastName: data.lastName});
+        if (userDetails) //not first entry
+        {
+            let data = JSON.parse(userDetails);
+            // load page content to browser
+            res.render('register', {title: 'Express', imgLogo: '/images/0.png', mailExists: false,
+                cookieExpired: false, email: data.email,   firstName: data.firstName, lastName: data.lastName});
+        }
+        else // first entry
+            res.render('register', {title: 'Express', imgLogo: '/images/0.png', mailExists: false,
+                cookieExpired: false, email:'', firstName: '', lastName: ''});
     }
-    else
-    {
+    else // cookie time expire
         res.render('register', {title: 'Express', imgLogo: '/images/0.png', mailExists: false,
-            email:'', firstName: '', lastName: ''});
-    }
+            cookieExpired: true, email:'', firstName: '', lastName: ''});
+
 });
 
 router.get('/register-password', function (req, res) {
-    res.render('register-password', {title: 'Express', imgLogo: '/images/0.png', equalPassword: true});
+
+    const cookies = new Cookies(req, res, {keys: keys})
+    if(cookies.get('userDetails', {signed: true}))
+        res.render('register-password', {title: 'Express', imgLogo: '/images/0.png', equalPassword: true});
+    else
+        res.redirect('/register/notExpire')
 });
 
 
 router.post('/register', function (req, res) {
 
     const cookies = new Cookies(req, res, {keys: keys})
-    const userDetails = cookies.get('userDetails', {signed: true});
+    let userDetails = cookies.get('userDetails', {signed: true});
 
     if (!userDetails) {
         //set new cookie
-        let newCookie = {
-            email: req.body.email,
-            firstName: req.body.firstName,
-            lastName: req.body.lastName
-        };
-        cookies.set('userDetails', JSON.stringify(newCookie), {signed: true, maxAge: 30 * 1000});
+        let newCookie = {email: req.body.email, firstName: req.body.firstName, lastName: req.body.lastName};
+        cookies.set('userDetails', JSON.stringify(newCookie), {signed: true, maxAge: 10 * 1000});
     }
-    console.log(emails);
-    if (emails.includes(req.body.email))
-    {
-        let data = JSON.parse(userDetails);
 
+    if (emails.includes(req.body.email)) // mail already exist
         res.render('register', {title: 'Express', imgLogo: '/images/0.png', mailExists: true,
-            email: data.email,   firstName: data.firstName, lastName: data.lastName});
-    }
+            cookieExpired: false, email:'', firstName:'', lastName:''});
     else
         res.redirect('register-password');
 });
@@ -72,13 +75,13 @@ router.post('/register-password', function (req, res) {
             data = JSON.parse(userDetails);
             emails.push(data.email);
             cookies.set('userDetails', userDetails, {signed: true, maxAge: -1});
-            res.redirect('/');
+            res.render('index', {title: 'Express', imgLogo: '/images/0.png', RegistrationSucceeded:true});
         }
         else
             res.render('register-password', {title: 'Express', imgLogo: '/images/0.png', equalPassword: false});
     }
     else
-        res.redirect('/register');
+        res.redirect('/register/expire');
 
 });
 
