@@ -1,5 +1,5 @@
 let express = require('express');
-const Cookies = require('cookies')
+const Cookies = require('cookies');
 const keys = ['keyboard cat'];
 let router = express.Router();
 
@@ -124,7 +124,7 @@ router.post('/register-password', function (req, res) {
     const cookies = new Cookies(req, res, {keys: keys});
     const userDetails = cookies.get('userDetails', {signed: true});
 
-    // check if the 'userDetails' cookie exists
+    // check if the 'userDetails' cookie exists - so user's session not expired
     if (userDetails) {
         // remove the 'userDetails' cookie
         cookies.set('userDetails', userDetails, {signed: true, maxAge: -1});
