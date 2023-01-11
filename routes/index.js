@@ -27,11 +27,13 @@ router.get('/register', function (req, res) {
     let beforeRefresh = cookies.get('refresh', {signed: true});
     let noDetailsFound = cookies.get('noDetailsFound', {signed: true});
 
+    // hold data extracting from cookie
     let data;
 
     // If the user's session is valid and the email address they entered already exists,
     // show an error message to the user indicating that the email address is already in use.
     if (beforeRefresh && userDetails) {
+        console.log('mail exist');
         data = JSON.parse(userDetails);
         res.render('register', {
             title: 'Express',
@@ -102,7 +104,7 @@ router.post('/register', function (req, res) {
     // create a new cookie to store the user's email, first name, and last name
     let newCookie = {email: req.body.email, firstName: req.body.firstName, lastName: req.body.lastName};
     cookies.set('userDetails', JSON.stringify(newCookie), {signed: true, maxAge: 10 * 1000});
-
+    console.log(emails);
     // check if the email address has already been registered
     if (emails.includes(req.body.email)) {
         // set a new cookie indicating that the email address is already in use
@@ -127,6 +129,8 @@ router.post('/register-password', function (req, res) {
     // check if the 'userDetails' cookie exists - so user's session not expired
     if (userDetails) {
         // remove the 'userDetails' cookie
+        let data = JSON.parse(userDetails);
+        emails.push(data.email);
         cookies.set('userDetails', userDetails, {signed: true, maxAge: -1});
         // render the 'index' view with a success message
         res.render('index', {title: 'Express', imgLogo: '/images/0.png', RegistrationSucceeded: true});
