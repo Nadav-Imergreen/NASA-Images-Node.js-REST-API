@@ -65,7 +65,7 @@ router.get('/register-password', function (req, res) {
     const cookies = new Cookies(req, res, {keys: keys})
     // security reasons - make sure no one pass without registration
     if (cookies.get('userDetails', {signed: true}))
-        res.render('register-password', {title: 'Express', imgLogo: '/images/0.png', equalPassword: true});
+        res.render('register-password', {title: 'Express', imgLogo: '/images/0.png'});
     else
         res.redirect('/register')
 });
@@ -100,7 +100,7 @@ router.post('/register-password', function (req, res) {
             cookies.set('userDetails', userDetails, {signed: true, maxAge: -1});
             res.render('index', {title: 'Express', imgLogo: '/images/0.png', RegistrationSucceeded: true});
         } else
-            res.render('register-password', {title: 'Express', imgLogo: '/images/0.png', equalPassword: false});
+            res.render('register-password', {title: 'Express', imgLogo: '/images/0.png'});
     } else {
         //set new cookie
         cookies.set('noDetailsFound', 'noDetailsFound', {signed: true, maxAge: 1000});
