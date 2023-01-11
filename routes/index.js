@@ -1,9 +1,9 @@
 let express = require('express');
 const Cookies = require('cookies')
+const keys = ['keyboard cat'];
 let router = express.Router();
 
 let emails = [];
-const keys = ['keyboard cat'];
 
 /* GET home page. */
 router.get('/', function (req, res) {
@@ -16,7 +16,7 @@ router.get('/register', function (req, res) {
 
     let userDetails = cookies.get('userDetails', {signed: true});
     let beforeRefresh = cookies.get('refresh', {signed: true});
-    let noCookieFound = cookies.get('noCookieFound', {signed: true});
+    let noDetailsFound = cookies.get('noDetailsFound', {signed: true});
 
     let data;
 
@@ -35,7 +35,7 @@ router.get('/register', function (req, res) {
     }
 
     // show error message if cookie time expire
-    if (!beforeRefresh && !noCookieFound) {
+    if (!beforeRefresh && !noDetailsFound) {
         if (userDetails) //not first entry
         {
             data = JSON.parse(userDetails);
@@ -63,10 +63,11 @@ router.get('/register', function (req, res) {
 router.get('/register-password', function (req, res) {
 
     const cookies = new Cookies(req, res, {keys: keys})
+    // security reasons - make sure no one pass without registration
     if (cookies.get('userDetails', {signed: true}))
         res.render('register-password', {title: 'Express', imgLogo: '/images/0.png', equalPassword: true});
     else
-        res.redirect('/register/notExpire')
+        res.redirect('/register')
 });
 
 
@@ -102,11 +103,9 @@ router.post('/register-password', function (req, res) {
             res.render('register-password', {title: 'Express', imgLogo: '/images/0.png', equalPassword: false});
     } else {
         //set new cookie
-        cookies.set('noCookieFound', 'noCookieFound', {signed: true, maxAge: 1000});
+        cookies.set('noDetailsFound', 'noDetailsFound', {signed: true, maxAge: 1000});
         res.redirect('/register');
     }
-    // res.redirect('/register/expire');
-
 });
 
 module.exports = router;
