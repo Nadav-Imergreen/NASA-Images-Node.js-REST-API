@@ -1,7 +1,7 @@
 const express = require('express');
-const registerController = require('../Controllers/regiisterScreen.js');
-const loginController = require('../Controllers/LoginScreen.js');
-const passwordController = require('../Controllers/passwordScreen.js');
+const registerController = require('../controllers/regiisterScreen.js');
+const loginController = require('../controllers/LoginScreen.js');
+const passwordController = require('../controllers/passwordScreen.js');
 
 const router = express.Router();
 

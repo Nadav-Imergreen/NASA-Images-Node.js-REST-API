@@ -5,7 +5,8 @@ const db = require('../models/emailsList');
 /**
  * GET register page
  * using cookies to store user data and check if the user's session is still valid
- *
+ * @param req
+ * @param res
  */
 exports.getRegisterPage = (req, res) => {
     // create a new cookies object
@@ -66,6 +67,8 @@ exports.getRegisterPage = (req, res) => {
  * stores the user's details in a cookie, and checks if the email already exists.
  * If it does, it redirects back to the registration page,
  * otherwise it redirects to the password registration page.
+ * @param req
+ * @param res
  */
 exports.postRegisterPage = (req, res) => {
     // create a new cookies object
@@ -73,7 +76,7 @@ exports.postRegisterPage = (req, res) => {
 
     // create a new cookie to store the user's email, first name, and last name
     let newCookie = {email: req.body.email, firstName: req.body.firstName, lastName: req.body.lastName};
-    cookies.set('userDetails', JSON.stringify(newCookie), {signed: true, maxAge: 10 * 1000});
+    cookies.set('userDetails', JSON.stringify(newCookie), {signed: true, maxAge: 30 * 1000});
     // check if the email address has already been registered
     if (db.emails.includes(req.body.email)) {
         // set a new cookie indicating that the email address is already in use

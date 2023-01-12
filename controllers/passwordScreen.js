@@ -2,24 +2,30 @@
 const keys = ['keyboard cat'];
 const Cookies = require("cookies");
 const db = require('../models/emailsList')
+const error = require('./error');
+
 /**
- * This router uses cookies to check if the user has already registered,
- * if yes, it renders the 'register-password' view,
- * otherwise it redirects the user to '/register' route,
- * ensuring that only registered users can reach the password registration page.
+ This router uses cookies to check if the user has already registered,
+ if yes, it renders the 'register-password' view,
+ otherwise it redirects the user to '/register' route,
+ ensuring that only registered users can reach the password registration page.
+ * @param req
+ * @param res
  */
 exports.getPasswordPage = (req, res) => {
     // create a new cookies object
     const cookies = new Cookies(req, res, {keys: keys});
     // security reasons - make sure no one pass without registration:
     // check if the 'userDetails' cookie exists, if it does, render the 'register-password' view
-    if (cookies.get('userDetails', {signed: true})) {
-        res.render('register-password', {title: 'Express', imgLogo: '/images/0.png'});
-    }
-    // if the 'userDetails' cookie does not exist, redirect to the '/register' route
-    else {
-        res.redirect('/register');
-    }
+    try {
+        if (cookies.get('userDetails', {signed: true})) {
+            res.render('register-password', {title: 'Express', imgLogo: '/images/0.png'});
+        }
+        // if the 'userDetails' cookie does not exist, redirect to the '/register' route
+        else
+            res.redirect('/register');
+    }catch (err){error.get404(req, res)}
+
 };
 
 /**
@@ -28,6 +34,8 @@ exports.getPasswordPage = (req, res) => {
  * If everything is fine: push the email to the emails array,
  * and renders the 'index' view with a success message,
  * otherwise: redirects back to 'register'.
+ * @param req
+ * @param res
  */
 exports.postPasswordPage = (req, res) => {
     // create a new cookies object and get the 'userDetails' cookie

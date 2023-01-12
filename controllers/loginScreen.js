@@ -1,5 +1,8 @@
+
 /**
  * GET home page
+ * @param req
+ * @param res
  */
 exports.getLoginPage =(req, res) => {
     //render the index view and provide a title, imgLogo, and RegistrationSucceeded to be used in the view

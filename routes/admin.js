@@ -1,6 +1,6 @@
 const express = require('express');
-const registerController = require('../Controllers/regiisterScreen.js');
-const passwordController = require('../Controllers/passwordScreen.js');
+const registerController = require('../controllers/regiisterScreen.js');
+const passwordController = require('../controllers/passwordScreen.js');
 const router = express.Router();
 
 router.post('/register', registerController.postRegisterPage);
