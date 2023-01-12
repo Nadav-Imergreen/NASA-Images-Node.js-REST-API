@@ -1,10 +1,14 @@
-let express = require('express');
-let router = express.Router();
+const express = require('express');
+const registerController = require('../Controllers/regiisterScreen.js');
+const loginController = require('../Controllers/LoginScreen.js');
+const passwordController = require('../Controllers/passwordScreen.js');
 
-/* GET users listing. */
-router.get('/', function(req, res) {
-  res.send('respond with a resource');
-});
+const router = express.Router();
 
+router.get('/', loginController.getLoginPage);
+
+router.get('/register', registerController.getRegisterPage);
+
+router.get('/register-password', passwordController.getPasswordPage);
 
 module.exports = router;
