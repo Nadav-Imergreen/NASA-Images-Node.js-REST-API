@@ -61,6 +61,12 @@ exports.postPasswordPage = (req, res) => {
     }
 };
 
+/**
+ * this function hashes the user's password
+ * and creates a new user in the database with hashed password.
+ * @param data
+ * @param password
+ */
 function hashPassword(data, password) {
     bcrypt.hash(password, 10)
         .then(hash => {
@@ -68,10 +74,11 @@ function hashPassword(data, password) {
                 firstName: data.firstName,
                 lastName: data.lastName,
                 mail: data.email,
-                password: hash
+                password: hash.toString()
             })
-                .catch(err => {
-                    console.log(err);
-                });
+            console.log('hash: ' + hash);
+        })
+        .catch(err => {
+            console.log(err);
         });
 }

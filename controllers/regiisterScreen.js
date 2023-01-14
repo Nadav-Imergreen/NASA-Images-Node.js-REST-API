@@ -78,15 +78,13 @@ exports.postRegisterPage = (req, res) => {
     let newCookie = {email: req.body.email, firstName: req.body.firstName, lastName: req.body.lastName};
     cookies.set('userDetails', JSON.stringify(newCookie), {signed: true, maxAge: 30 * 1000});
     // check if the email address has already been registered
-    db.Contact.findAll({where:{mail:req.body.email}}).then(user => {
-        if (user.length > 0)
-        {
+    db.Contact.findAll({where: {mail: req.body.email}}).then(user => {
+        if (user.length > 0) {
             // set a new cookie indicating that the email address is already in use
             cookies.set('refresh', 'errorExist', {signed: true, maxAge: 1000});
             //req.session.login = true;
             res.redirect('/register');
-        }
-        else
+        } else
             res.redirect('register-password');
     }).catch()
 };
