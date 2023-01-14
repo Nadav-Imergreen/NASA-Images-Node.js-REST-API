@@ -49,13 +49,7 @@ exports.postPasswordPage = (req, res) => {
     if (userDetails) {
         // store user data in sql db
         let data = JSON.parse(userDetails);
-        db.Contact.create({
-            firstName: data.firstName,
-            lastName: data.lastName,
-            mail: data.email,
-            password: data.password
-        })
-        //hashPassword(data);
+        hashPassword(data, req.body.password);
         // remove the 'userDetails' cookie
         cookies.set('userDetails', userDetails, {signed: true, maxAge: -1});
         // render the 'index' view with a success message
@@ -66,21 +60,18 @@ exports.postPasswordPage = (req, res) => {
         res.redirect('/register');
     }
 };
-// bcrypt.genSalt(10, (err, salt) => {
-//     bcrypt.hash(data.password, salt, function (err, hash) {});
-// });
 
-function hashPassword(data) {
-    bcrypt.hash(data.password, 10)
+function hashPassword(data, password) {
+    bcrypt.hash(password, 10)
         .then(hash => {
             db.Contact.create({
                 firstName: data.firstName,
                 lastName: data.lastName,
                 mail: data.email,
                 password: hash
-        })
-        .catch(err => {
-            console.log(err);
+            })
+                .catch(err => {
+                    console.log(err);
+                });
         });
-});
 }
