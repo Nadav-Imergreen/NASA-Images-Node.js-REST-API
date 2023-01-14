@@ -1,8 +1,9 @@
 // array to store the registered email addresses
 const keys = ['keyboard cat'];
 const Cookies = require("cookies");
-const db = require('../models/emailsList')
+const db = require('../models')
 const error = require('./error');
+const bcrypt = require("bcrypt")
 
 /**
  This router uses cookies to check if the user has already registered,
@@ -24,7 +25,9 @@ exports.getPasswordPage = (req, res) => {
         // if the 'userDetails' cookie does not exist, redirect to the '/register' route
         else
             res.redirect('/register');
-    }catch (err){error.get404(req, res)}
+    } catch (err) {
+        error.get404(req, res)
+    }
 
 };
 
@@ -44,9 +47,10 @@ exports.postPasswordPage = (req, res) => {
 
     // check if the 'userDetails' cookie exists - so user's session not expired
     if (userDetails) {
-        // remove the 'userDetails' cookie
+        // store user data in sql db
         let data = JSON.parse(userDetails);
-        db.emails.push(data.email);
+        hashPassword(data);
+        // remove the 'userDetails' cookie
         cookies.set('userDetails', userDetails, {signed: true, maxAge: -1});
         // render the 'index' view with a success message
         res.render('index', {title: 'Express', imgLogo: '/images/0.png', RegistrationSucceeded: true});
@@ -56,3 +60,21 @@ exports.postPasswordPage = (req, res) => {
         res.redirect('/register');
     }
 };
+// bcrypt.genSalt(10, (err, salt) => {
+//     bcrypt.hash(data.password, salt, function (err, hash) {});
+// });
+
+function hashPassword(data) {
+    bcrypt.hash(data.password, 10)
+        .then(hash => {
+            db.Contact.create({
+                firstName: data.firstName,
+                lastName: data.lastName,
+                mail: data.email,
+                password: hash
+        })
+        .catch(err => {
+            console.log(err);
+        });
+});
+}

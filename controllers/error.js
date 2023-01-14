@@ -1,5 +1,5 @@
 /**
- * catch errors
+ * handle 404 errors
  * @param req
  * @param res
  */

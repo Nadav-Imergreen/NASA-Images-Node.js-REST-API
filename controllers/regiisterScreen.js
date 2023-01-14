@@ -1,6 +1,6 @@
 const Cookies = require('cookies');
 const keys = ['keyboard cat'];
-const db = require('../models/emailsList');
+const db = require('../models');
 
 /**
  * GET register page
@@ -78,11 +78,16 @@ exports.postRegisterPage = (req, res) => {
     let newCookie = {email: req.body.email, firstName: req.body.firstName, lastName: req.body.lastName};
     cookies.set('userDetails', JSON.stringify(newCookie), {signed: true, maxAge: 30 * 1000});
     // check if the email address has already been registered
-    if (db.emails.includes(req.body.email)) {
-        // set a new cookie indicating that the email address is already in use
-        cookies.set('refresh', 'errorExist', {signed: true, maxAge: 1000});
-        res.redirect('/register');
-    } else {
-        res.redirect('register-password');
-    }
+    db.Contact.findAll({where:{mail:req.body.email}}).then(user => {
+        if (user.length > 0)
+        {
+            console.log('dsvfb')
+            // set a new cookie indicating that the email address is already in use
+            cookies.set('refresh', 'errorExist', {signed: true, maxAge: 1000});
+            //req.session.login = true;
+            res.redirect('/register');
+        }
+        else
+            res.redirect('register-password');
+    }).catch()
 };
