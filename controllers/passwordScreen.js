@@ -49,7 +49,13 @@ exports.postPasswordPage = (req, res) => {
     if (userDetails) {
         // store user data in sql db
         let data = JSON.parse(userDetails);
-        hashPassword(data);
+        db.Contact.create({
+            firstName: data.firstName,
+            lastName: data.lastName,
+            mail: data.email,
+            password: data.password
+        })
+        //hashPassword(data);
         // remove the 'userDetails' cookie
         cookies.set('userDetails', userDetails, {signed: true, maxAge: -1});
         // render the 'index' view with a success message

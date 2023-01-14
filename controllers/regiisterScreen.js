@@ -55,7 +55,7 @@ exports.getRegisterPage = (req, res) => {
                 title: 'Express', imgLogo: '/images/0.png', mailExists: false,
                 cookieExpired: false, email: '', firstName: '', lastName: ''
             });
-    } else  // cookie time expired
+    } else if (noDetailsFound) // cookie time expired
         res.render('register', {
             title: 'Express', imgLogo: '/images/0.png', mailExists: false,
             cookieExpired: true, email: '', firstName: '', lastName: ''
@@ -81,7 +81,6 @@ exports.postRegisterPage = (req, res) => {
     db.Contact.findAll({where:{mail:req.body.email}}).then(user => {
         if (user.length > 0)
         {
-            console.log('dsvfb')
             // set a new cookie indicating that the email address is already in use
             cookies.set('refresh', 'errorExist', {signed: true, maxAge: 1000});
             //req.session.login = true;
