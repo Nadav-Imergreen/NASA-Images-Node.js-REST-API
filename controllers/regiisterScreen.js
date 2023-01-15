@@ -82,7 +82,6 @@ exports.postRegisterPage = (req, res) => {
         if (user.length > 0) {
             // set a new cookie indicating that the email address is already in use
             cookies.set('refresh', 'errorExist', {signed: true, maxAge: 1000});
-            //req.session.login = true;
             res.redirect('/register');
         } else
             res.redirect('register-password');

@@ -20,6 +20,10 @@
         <% if(RegistrationSucceeded) { %>
             <p class="text-center text-success">Registration completed successfully, you can now log-in</p>
         <% } %>
+
+        <% if(wrongEntryDetails) { %>
+            <p class="text-center text-danger">Username or password are incorrect, please try again</p>
+        <% } %>
         <form action="/" method="post">
         <div class="form-floating">
             <div class="input-group">

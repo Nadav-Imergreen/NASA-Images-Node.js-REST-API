@@ -53,7 +53,7 @@ exports.postPasswordPage = (req, res) => {
         // remove the 'userDetails' cookie
         cookies.set('userDetails', userDetails, {signed: true, maxAge: -1});
         // render the 'index' view with a success message
-        res.render('index', {title: 'Express', imgLogo: '/images/0.png', RegistrationSucceeded: true});
+        res.render('index', {title: 'Express', imgLogo: '/images/0.png', RegistrationSucceeded: true, wrongEntryDetails: false});
     } else {
         // set a new cookie indicating that the user's session has expired,
         cookies.set('noDetailsFound', 'noDetailsFound', {signed: true, maxAge: 1000});
