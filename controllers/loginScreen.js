@@ -28,43 +28,21 @@ exports.postLoginPage = (req, res) => {
     db.Contact.findAll({where: {mail: req.body.userName}})
         //compare entered password with hashed password of the user
         .then(user => {
-            comparePassword(req.body.password, user[0].password, res, req);
-        })
-        // catch any errors
-        .catch(() => {
-            res.render('index', {
-                title: 'Express',
-                RegistrationSucceeded: false,
-                wrongEntryDetails: true
-            });
-        });
-};
-
-/**
- * this function compares the plaintext password with the hashed password,
- * if they match it will log match otherwise no match,
- * it also catches any errors that might occur during the process of comparison.
- * @param plaintextPassword
- * @param hash
- * @param res
- * @param req
- * @returns {Promise<unknown>}
- */
-function comparePassword(plaintextPassword, hash, res, req) {
-    //compare plaintext password with hashed password
-    bcrypt.compare(plaintextPassword, hash)
-        // if matched, go to nasa website
-        .then(result => {
-            req.session.login = true;
-            result ? res.redirect('/nasa/photos')
-                : res.render('index', {
-                    title: 'Express',
+            // compares plaintext password with the hashed password
+            if (bcrypt.compareSync(req.body.password, user[0].password)) {
+                req.session.login = true;
+                res.redirect('/nasa/photos');
+            } else
+                res.render('index', {
                     RegistrationSucceeded: false,
                     wrongEntryDetails: true
                 });
         })
         // catch any errors
-        .catch(err => {
-            console.log(err)
+        .catch(() => {
+            res.render('index', {
+                RegistrationSucceeded: false,
+                wrongEntryDetails: true
+            });
         });
-}
+};

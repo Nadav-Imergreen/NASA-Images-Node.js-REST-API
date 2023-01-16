@@ -32,7 +32,8 @@
                 <span class="input-group-text">
                     <i class="bi bi-envelope-at"></i>
                 </span>
-                    <input type="email" class="form-control" id="mail" name="email" value="<%= email %>"
+                    <input type="email" class="form-control" id="mail" name="email"
+                           value="<% if (typeof email !== 'undefined') { %><%= email %><% } %>"
                            placeholder="Email address" required>
                 </div>
             </div>
@@ -41,9 +42,11 @@
                 <span class="input-group-text">
                     <i class="bi bi-person"></i>
                 </span>
-                    <input type="text" class="form-control" id="first name" name="firstName" value="<%= firstName %>"
-                           placeholder="First Name"
-                           pattern="[a-zA-Z ]{3,32}" required>
+                    <label for="first name"></label><input type="text" class="form-control" id="first name"
+                                                           value="<% if (typeof firstName !== 'undefined') { %><%= firstName %><% } %>"
+                                                           name="firstName"
+                                                           placeholder="First Name"
+                                                           pattern="[a-zA-Z ]{3,32}" required>
                 </div>
             </div>
             <div class="form-floating">
@@ -51,9 +54,12 @@
                 <span class="input-group-text">
                     <i class="bi bi-person-fill"></i>
                 </span>
-                    <input type="text" class="form-control" id="last name" name="lastName" value="<%= lastName %>"
-                           placeholder="Last Name"
-                           pattern="[a-zA-Z ]{3,32}" required>
+                    <label for="last name"></label><input type="text" class="form-control" id="last name"
+                                                          value="<% if (typeof lastName !== 'undefined') { %><%= lastName %><% } %>"
+                                                          name="lastName"
+                                                          placeholder="Last Name"
+                                                          pattern="[a-zA-Z ]{3,32}" required>
+
                 </div>
             </div>
             <br>

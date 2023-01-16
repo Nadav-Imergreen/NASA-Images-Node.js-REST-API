@@ -20,7 +20,7 @@ exports.getPasswordPage = (req, res) => {
     // check if the 'userDetails' cookie exists, if it does, render the 'register-password' view
     try {
         if (cookies.get('userDetails', {signed: true})) {
-            res.render('register-password', {title: 'Express'});
+            res.render('register-password');
         }
         // if the 'userDetails' cookie does not exist, redirect to the '/register' route
         else
@@ -53,7 +53,7 @@ exports.postPasswordPage = (req, res) => {
         // remove the 'userDetails' cookie
         cookies.set('userDetails', userDetails, {signed: true, maxAge: -1});
         // render the 'index' view with a success message
-        res.render('index', {title: 'Express', RegistrationSucceeded: true, wrongEntryDetails: false});
+        res.render('index', {RegistrationSucceeded: true, wrongEntryDetails: false});
     } else {
         // set a new cookie indicating that the user's session has expired,
         cookies.set('noDetailsFound', 'noDetailsFound', {signed: true, maxAge: 1000});

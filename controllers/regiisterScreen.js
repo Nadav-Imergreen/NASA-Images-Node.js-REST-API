@@ -26,7 +26,6 @@ exports.getRegisterPage = (req, res) => {
         console.log('mail exist');
         data = JSON.parse(userDetails);
         res.render('register', {
-            title: 'Express',
             email: data.email,
             firstName: data.firstName,
             lastName: data.lastName,
@@ -41,7 +40,6 @@ exports.getRegisterPage = (req, res) => {
         if (userDetails) { // not the first entry
             data = JSON.parse(userDetails);
             res.render('register', {
-                title: 'Express',
                 email: data.email,
                 firstName: data.firstName,
                 lastName: data.lastName,
@@ -50,13 +48,13 @@ exports.getRegisterPage = (req, res) => {
             });
         } else  // first entry
             res.render('register', {
-                title: 'Express', mailExists: false,
-                cookieExpired: false, email: '', firstName: '', lastName: ''
+                mailExists: false,
+                cookieExpired: false
             });
     } else if (noDetailsFound) // cookie time expired
         res.render('register', {
-            title: 'Express', mailExists: false,
-            cookieExpired: true, email: '', firstName: '', lastName: ''
+            mailExists: false,
+            cookieExpired: true
         });
 };
 
