@@ -10,7 +10,6 @@ exports.getLoginPage = (req, res) => {
     //render the index view and provide a title, imgLogo, and RegistrationSucceeded to be used in the view
     res.render('index', {
         title: 'Express',
-        imgLogo: '/images/0.png',
         RegistrationSucceeded: false,
         wrongEntryDetails: false
     });
@@ -35,7 +34,6 @@ exports.postLoginPage = (req, res) => {
         .catch(() => {
             res.render('index', {
                 title: 'Express',
-                imgLogo: '/images/0.png',
                 RegistrationSucceeded: false,
                 wrongEntryDetails: true
             });
@@ -61,7 +59,6 @@ function comparePassword(plaintextPassword, hash, res, req) {
             result ? res.redirect('/nasa/photos')
                 : res.render('index', {
                     title: 'Express',
-                    imgLogo: '/images/0.png',
                     RegistrationSucceeded: false,
                     wrongEntryDetails: true
                 });

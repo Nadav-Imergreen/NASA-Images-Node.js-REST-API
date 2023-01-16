@@ -9,6 +9,6 @@
  */
 exports.getNasaPage = (req, res) => {
     //render nasa view if user is longed-in. else, return user to login page
-    req.session.login === true ? res.render('nasa', {title: 'Express', imgLogo: '/images/0.png'}) : res.redirect('/');
+    req.session.login === true ? res.render('nasa', {title: 'Express'}) : res.redirect('/');
 };
 
