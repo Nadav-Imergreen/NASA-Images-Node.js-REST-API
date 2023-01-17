@@ -7,7 +7,10 @@ const bcrypt = require("bcrypt");
  * @param res
  */
 exports.getLoginPage = (req, res) => {
-    //render the index view and provide a title, imgLogo, and RegistrationSucceeded to be used in the view
+    // redirect to nasa page, but if user is not connected - go to login page
+    if (req.session.login)
+        res.redirect('/nasa/photos');
+    else
     res.render('index', {
         title: 'Express',
         RegistrationSucceeded: false,
@@ -25,11 +28,11 @@ exports.getLoginPage = (req, res) => {
  */
 exports.postLoginPage = (req, res) => {
     // Finds a user with the same email as entered in the form
-    db.Contact.findAll({where: {mail: req.body.userName}})
+    db.Contact.findOne({where: {mail: req.body.userName.toLowerCase()}})
         //compare entered password with hashed password of the user
         .then(user => {
             // compares plaintext password with the hashed password
-            if (bcrypt.compareSync(req.body.password, user[0].password)) {
+            if (bcrypt.compareSync(req.body.password, user.password)) {
                 req.session.login = true;
                 res.redirect('/nasa/photos');
             } else

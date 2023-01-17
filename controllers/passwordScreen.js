@@ -28,7 +28,6 @@ exports.getPasswordPage = (req, res) => {
     } catch (err) {
         error.get404(req, res)
     }
-
 };
 
 /**
@@ -75,8 +74,7 @@ function hashPassword(data, password) {
                 lastName: data.lastName,
                 mail: data.email,
                 password: hash.toString()
-            })
-            console.log('hash: ' + hash);
+            });
         })
         .catch(err => {
             console.log(err);

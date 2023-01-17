@@ -23,7 +23,6 @@ exports.getRegisterPage = (req, res) => {
     // If the user's session is valid and the email address they entered already exists,
     // show an error message to the user indicating that the email address is already in use.
     if (beforeRefresh && userDetails) {
-        console.log('mail exist');
         data = JSON.parse(userDetails);
         res.render('register', {
             email: data.email,
@@ -74,8 +73,8 @@ exports.postRegisterPage = (req, res) => {
     let newCookie = {email: req.body.email, firstName: req.body.firstName, lastName: req.body.lastName};
     cookies.set('userDetails', JSON.stringify(newCookie), {signed: true, maxAge: 30 * 1000});
     // check if the email address has already been registered
-    db.Contact.findAll({where: {mail: req.body.email}}).then(user => {
-        if (user.length > 0) {
+    db.Contact.findOne({where: {mail: req.body.email}}).then(user => {
+        if (user) {
             // set a new cookie indicating that the email address is already in use
             cookies.set('refresh', 'errorExist', {signed: true, maxAge: 1000});
             res.redirect('/register');

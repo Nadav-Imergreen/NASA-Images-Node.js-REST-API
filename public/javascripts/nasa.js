@@ -226,11 +226,11 @@ function appendComment(imageId) {
  */
 function postComment(comment, imageId) {
 
-    let userId = document.getElementById('username input').value;
+    let userName = localStorage.getItem('userName').split('@')[0];
+    console.log(userName);
 
-    // const userName = document.getElementById("username input").value;
     (async () => {
-        try {
+
             await fetch('/api/submit_comment', {
                 method: 'POST',
                 headers: {
@@ -241,14 +241,10 @@ function postComment(comment, imageId) {
                     comment: comment,
                     imageId: imageId,
                     commentId: Date.now().toString(),
-                    userId: userId
+                    userId: userName
                 })
-            });
-            // show submitted comment on dom
-            getCommentsImmediately(imageId);
-        } catch (error) {
-            console.error(JSON.parse(JSON.stringify(error)));
-        }
+            }).then((comments) =>{writeComments2dom(comments, imageId)})
+                .catch((error) =>console.error(JSON.parse(JSON.stringify(error))))
     })();
 }
 /**
@@ -444,11 +440,11 @@ function writeComments2dom(content, imageId) {
  * to retrieve the comments for the image with the given ID
  * and then writes the comments to the DOM.
  */
-function getComments(imageId) {
+function autoGetComments(imageId) {
     // Asynchronously send a GET request to the server to retrieve the comments for the given image
     (async () => {
         try {
-            const rawResponse = await fetch('/api/show_comments/' + imageId, {
+            const rawResponse = await fetch('/api/auto/show_comments/' + imageId, {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
@@ -469,15 +465,15 @@ function getComments(imageId) {
 
 /**
  * @param imageId
- * getCommentsImmediately(imageId) makes a GET request to the server
+ * getComments(imageId) makes a GET request to the server
  * to retrieve the comments immediately for the image with the given ID
  * and then writes the comments to the DOM.
  */
-function getCommentsImmediately(imageId) {
+function getComments(imageId) {
     // Asynchronously send a GET request to the server to retrieve the comments immediately for the given image
     (async () => {
         try {
-            const rawResponse = await fetch('/api/show_comments_immediately/' + imageId, {
+            const rawResponse = await fetch('/api/show_comments/' + imageId, {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
@@ -546,11 +542,11 @@ function handleClickEvents(imageId) {
 
     // by pressing showComments button show/hide comments
     showCommentButton.addEventListener("click", () => {
-        getCommentsImmediately(imageId);
+        getComments(imageId);
 
         // update comments every 15 seconds if any change happened
         setInterval(function () {
-            getComments(imageId)
+            autoGetComments(imageId)
         }, 15000);
         toggleElement(commentTable);
     });
@@ -647,7 +643,7 @@ function showData(json) {
         buildCommentsTable(obg.date);
 
         // handle click on buttons - {explanation, comment, submit comment}
-        //handleClickEvents(obg.date, obg)
+        handleClickEvents(obg.date, obg)
 
     });
 }
@@ -666,6 +662,16 @@ function removeChildren(element) {
  * This function waits for the HTML document to finish loading before running the code inside it.
  */
 document.addEventListener('DOMContentLoaded', () => {
+
+    let userName = localStorage.getItem('userName').split('@')[0];
+    let text = document.createTextNode('Welcome! ' + userName + ' good to see you');
+    document.getElementById('welcomeText').appendChild(text);
+
+    // db.Contact.findOne({where:{title: userName}, attributes:'firstName'})
+    //     .then((person) => {
+    //         let text = document.createTextNode('Welcome! ' + person.firstName + ' good to see you');
+    //         document.getElementById('welcomeText').appendChild(text);})
+    //     .catch()
     /**
      *  This function sets up an event listener for the "submit date" button.
      *  When the button is clicked, the code inside the function is run.
