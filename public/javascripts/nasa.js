@@ -555,7 +555,7 @@ function buildCommentsTable(imageId) {
     const col1 = createCol();
     const col2 = createCol();
 
-    // create an icon element using a eye icon from the bi font library
+    // create an icon element using  eye icon from the bi font library
     let eye = document.createElement('i');
     eye.classList.add('bi');
     eye.classList.add('bi-eye-fill');
