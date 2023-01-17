@@ -22,38 +22,39 @@ function findCommentsInImage(commentList, imageId) {
  *  POST a new comment.
  */
 exports.postComment = (req, res) => {
-console.log('in post comment');
+
     // add new comment to comment table if comment not empty
-    if (newComment.comment !== '')
+    if (req.body.comment !== '') {
         db.Comment.create({
             comment: req.body.comment,
-            userId: req.body.userId,
+            userName: req.body.userName,
             imageId: req.body.imageId,
             commentId: req.body.commentId
         });
+
+        // Find all comments for the current image
+        db.Comment.findAll({where: {imageId: req.body.imageId}, attributes: ['comment']})
+            .then(post => {
+                // Send the updated list of comments for the current image as a response
+                console.log('comment', post);
+                res.json(post);
+                res.end();
+            })
+            .catch()
+    }
     else
         res.status(400).send({'message': 'comment empty'});
-
-    // Find all comments for the current image
-    db.Comment.findAll({where: {postId: req.body.imageId}, attributes: ['comment']})
-        .then(post => {
-            // Send the updated list of comments for the current image as a response
-            lastUpdate = Date.now();
-            res.json(post);
-            res.end();
-        })
-        .catch()
 };
 
 /**
  * GET a list of comments for a specific image if was update in tle last 15 seconds.
  */
 exports.autoGetComments = (req, res) => {
-    
+
     // if change appenf in last 15 seconds - update comments
     if (Date.now() - lastUpdate > 15000)
         // Send the list of comments for the current image as a response if image id correct
-        db.Comment.findAll({where: {postId: req.body.imageId}, attributes: ['comment']})
+        db.Comment.findAll({where: {imageId: req.params.imageId}, attributes: ['comment']})
             .then(post => {
                 // Send the updated list of comments for the current image as a response
                 res.json(post);
@@ -73,23 +74,22 @@ exports.autoGetComments = (req, res) => {
 exports.getComments = (req, res) => {
 
     // Find all comments for the current image, and send the list of comments as a response
-    db.Comment.findAll({where: {postId: req.body.imageId}, attributes: ['comment']})
+    db.Comment.findAll({where: {imageId: req.params.imageId}, attributes: ['userName', 'comment', 'commentId']})
         .then(post => {
             res.json(post);
             res.end();
         })
         .catch()
-
-    res.end();
 };
 
 /**
  * DELETE a comment for a specific image.
  */
 exports.deleteComment = (req, res) => {
+    console.log('commentId'  + req.params.commentId);
 
     //find the comment with the specified commentId and delete it
-        db.Comment.findOne(commentId)
+        db.Comment.findOne({where:{commentId: req.params.commentId}})
             .then(comment => {
                 if (!comment) {
                     // handle case where comment is not found
@@ -98,9 +98,8 @@ exports.deleteComment = (req, res) => {
             })
             .then(() => {
                 // Find all comments for the current image, and send the updated comments as a response
-                db.Comment.findAll({where: {postId: req.body.imageId}, attributes: ['comment']})
+                db.Comment.findAll({where: {imageId: req.params.imageId}, attributes: ['userName', 'comment', 'commentId']})
                     .then(post => {
-                        lastUpdate = Date.now();
                         res.json(post);
                         res.end();
                     })
@@ -109,6 +108,4 @@ exports.deleteComment = (req, res) => {
             .catch(error => {
                 // handle error
             });
-
-    res.end();
 };

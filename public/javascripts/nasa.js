@@ -9,6 +9,7 @@ function getStartDate(endDate) {
     startDate.setDate(startDate.getDate() - 2);
     return startDate;
 }
+
 /**
  * getData(startDate, endDate): This function makes a GET request to the NASA API
  * with the given start and end dates to retrieve photos.
@@ -29,6 +30,7 @@ async function getData(startDate, endDate) {
         document.querySelector("#data").innerHTML = "Something went wrong: " + err
     }
 }
+
 /**
  * showElement(ele) remove the "d-none" class from the given element to show it.
  * @param elm
@@ -65,6 +67,7 @@ function status(response) {
         return Promise.reject(new Error(response.statusText))
     }
 }
+
 /**
  * appendDateAndTitle: adds the title and date of the given object to the page.
  * @param obg
@@ -110,6 +113,7 @@ function appendCopyright(obg) {
     col.appendChild(copyright);
     copyright.append("copyright: " + (obg.copyright));
 }
+
 /**
  * appendMedia: adds the media (image or video) of the given object to the page.
  * @param obg
@@ -161,6 +165,7 @@ function createButtonElement(index, text) {
 
     return button;
 }
+
 /**
  * this  function creates an HTML input element with a type of "text".
  * @returns {HTMLInputElement}
@@ -227,26 +232,28 @@ function appendComment(imageId) {
 function postComment(comment, imageId) {
 
     let userName = localStorage.getItem('userName').split('@')[0];
-    console.log(userName);
 
     (async () => {
 
-            await fetch('/api/submit_comment', {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    comment: comment,
-                    imageId: imageId,
-                    commentId: Date.now().toString(),
-                    userId: userName
-                })
-            }).then((comments) =>{writeComments2dom(comments, imageId)})
-                .catch((error) =>console.error(JSON.parse(JSON.stringify(error))))
+        await fetch('/submit_comment', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                comment: comment,
+                imageId: imageId,
+                commentId: Date.now().toString(),
+                userName: userName
+            })
+        }).then((post) => {
+            getComments(imageId)
+        })
+            .catch((error) => console.error(JSON.parse(JSON.stringify(error))))
     })();
 }
+
 /**
  * appendExplanation: adds an explanation field and button to the page for the given object.
  * @param obg
@@ -267,6 +274,7 @@ function appendExplanation(obg) {
     col.append(explanationElement);
     explanationElement.append(obg.explanation)
 }
+
 /**
  * This function takes in a date object and returns a string in the format "year-month-day".
  * It gets the day, month, and year from the date object and then formats it into the desired string.
@@ -279,6 +287,7 @@ function date2string(date) {
     let year = date.getFullYear();
     return `${year}-${month}-${day}`;
 }
+
 /**
  * createRow creates a div element with the class "row"
  * @returns {HTMLDivElement}
@@ -289,6 +298,7 @@ function createRow() {
     row.classList.add("row")
     return row;
 }
+
 /**
  * createCol creates a div element with the class "col"
  * @returns {HTMLDivElement}
@@ -299,6 +309,7 @@ function createCol() {
     col.classList.add("col")
     return col;
 }
+
 /**
  * createDataTable creates a row with two columns,
  * each with the classes "col-md-12" and "col-lg-6",
@@ -339,6 +350,7 @@ function createDataTable(imageId) {
     row.appendChild(col2);
     col2.appendChild(card2)
 }
+
 /**
  * createButtonDelete creates a button element with the classes
  * "btn","btn-sm", and "btn-danger" and appends an icon element to it
@@ -361,6 +373,7 @@ function createButtonDelete() {
 
     return button;
 }
+
 /**
  * deleteOldComments removes the tbody element with the given image ID from the page
  * @param imageId
@@ -371,6 +384,7 @@ function deleteOldComments(imageId) {
         document.getElementById('tbody' + imageId.toString()).remove();
     }
 }
+
 /**
  * buildTbody creates a tbody element with the given image ID
  * and appends it to a table with the given image ID
@@ -388,7 +402,7 @@ function buildTbody(imageId) {
 
 function creteDeleteOption(comment, colInTable) {
     let deleteButton = createButtonDelete()
-    deleteButton.setAttribute('id', 'deleteComment' + comment.commentId.toString());
+    deleteButton.setAttribute('id', 'deleteComment' + comment.commentId);
     colInTable.appendChild(deleteButton);
 }
 
@@ -411,8 +425,9 @@ function writeComments2dom(content, imageId) {
         let td2 = document.createElement('td');
         // display comment to html
         th.innerText = index;
-        td1.innerText = comment.userId;
+        td1.innerText = comment.userName;
         td2.innerText = comment.comment;
+
 
         // add the row and cells to the table body
         tbody.appendChild(tr);
@@ -421,12 +436,12 @@ function writeComments2dom(content, imageId) {
         tr.appendChild(td2);
 
         // creates a delete button element next to comment if this user write this comment.
-        if (comment.userId === document.getElementById('username input').value)
-            creteDeleteOption(comment, tr);
+        // if (comment.userName === document.getElementById('username input').value)
+        creteDeleteOption(comment, tr);
 
         // add an event listener to the delete button to delete the comment when clicked
-        let deleteEle = document.getElementById('deleteComment' + comment.commentId.toString())
-        if (deleteEle){
+        let deleteEle = document.getElementById('deleteComment' + comment.commentId)
+        if (deleteEle) {
             deleteEle.addEventListener("click", () => {
                 deleteComment(imageId, comment.commentId);
             });
@@ -443,23 +458,23 @@ function writeComments2dom(content, imageId) {
 function autoGetComments(imageId) {
     // Asynchronously send a GET request to the server to retrieve the comments for the given image
     (async () => {
-        try {
-            const rawResponse = await fetch('/api/auto/show_comments/' + imageId, {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-            });
-            // Convert the response to JSON
-            const content = await rawResponse.json();
 
-            // Write the comments to the DOM
-            writeComments2dom(content, imageId);
+        const rawResponse = await fetch('/auto/show_comments/' + imageId, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+        });
+        // Convert the response to JSON
+        const content = await rawResponse.json();
 
-        } catch (error) {
-            console.log(JSON.parse(JSON.stringify(error)));
-        }
+        // Write the comments to the DOM
+        writeComments2dom(content, imageId);
+
+
+        //console.log(JSON.parse(JSON.stringify(error)));
+
     })();
 }
 
@@ -472,23 +487,23 @@ function autoGetComments(imageId) {
 function getComments(imageId) {
     // Asynchronously send a GET request to the server to retrieve the comments immediately for the given image
     (async () => {
-        try {
-            const rawResponse = await fetch('/api/show_comments/' + imageId, {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-            });
-            // Convert the response to JSON
-            const content = await rawResponse.json();
+        // try {
+        const rawResponse = await fetch('/show_comments/' + imageId, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+        });
+        // Convert the response to JSON
+        const content = await rawResponse.json();
 
-            // Write the comments to the DOM
-            writeComments2dom(content, imageId);
+        // Write the comments to the DOM
+        writeComments2dom(content, imageId);
 
-        } catch (error) {
-            console.error(JSON.parse(JSON.stringify(error)));
-        }
+        // } catch (error) {
+        //     console.error(JSON.parse(JSON.stringify(error)));
+        // }
     })();
 }
 
@@ -502,7 +517,7 @@ function getComments(imageId) {
 function deleteComment(imageId, commentId) {
     (async () => {
         try {
-            const rawResponse = await fetch('/api/show_comments/' + imageId + '/' + commentId, {
+            const rawResponse = await fetch('/delete_comment/' + imageId + '/' + commentId, {
                 method: 'DELETE',
                 headers: {
                     'Accept': 'application/json',
@@ -510,6 +525,7 @@ function deleteComment(imageId, commentId) {
                 },
             });
             const content = await rawResponse.json();
+            console.log(content);
 
             writeComments2dom(content, imageId);
 
@@ -531,9 +547,9 @@ function handleClickEvents(imageId) {
     let commentFormEle = document.getElementById('comment form' + imageId.toString());
     let commentEle = document.getElementById("comment" + imageId.toString());
     let commentTable = document.getElementById("comment table" + imageId.toString());
-    let addCommentButton =  document.getElementById("add comment button" + imageId.toString());
-    let showCommentButton =  document.getElementById("show comments button" + imageId.toString());
-    let submitCommentButton =  document.getElementById("submitComment button" + imageId.toString());
+    let addCommentButton = document.getElementById("add comment button" + imageId.toString());
+    let showCommentButton = document.getElementById("show comments button" + imageId.toString());
+    let submitCommentButton = document.getElementById("submitComment button" + imageId.toString());
 
     // by pressing appendComments button show/hide comment form
     addCommentButton.addEventListener("click", () => {
@@ -543,12 +559,12 @@ function handleClickEvents(imageId) {
     // by pressing showComments button show/hide comments
     showCommentButton.addEventListener("click", () => {
         getComments(imageId);
+        toggleElement(commentTable);
 
         // update comments every 15 seconds if any change happened
-        setInterval(function () {
-            autoGetComments(imageId)
-        }, 15000);
-        toggleElement(commentTable);
+        // setInterval(function () {
+        //     autoGetComments(imageId)
+        // }, 15000);
     });
 
     // by pressing submit comments - post comment to server
@@ -647,6 +663,7 @@ function showData(json) {
 
     });
 }
+
 /**
  * remove all children from a given element
  * @param element
@@ -656,6 +673,7 @@ function removeChildren(element) {
         element.removeChild(element.firstChild);
     }
 }
+
 //--------------------------------------------------
 /**
  * document.addEventListener('DOMContentLoaded', ...):

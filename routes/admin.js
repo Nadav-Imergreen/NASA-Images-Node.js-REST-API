@@ -17,7 +17,7 @@ router.get('/auto/show_comments/:imageId', nasaController.autoGetComments);
 
 router.get('/show_comments/:imageId', nasaController.getComments);
 
-router.delete('/show_comments/:imageId/:commentId', nasaController.deleteComment);
+router.delete('/delete_comment/:imageId/:commentId', nasaController.deleteComment);
 
 module.exports = router;
 
