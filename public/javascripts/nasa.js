@@ -32,13 +32,6 @@ async function getData(startDate, endDate) {
 }
 
 /**
- * showElement(ele) remove the "d-none" class from the given element to show it.
- * @param elm
- */
-const showElement = (elm) => {
-    elm.classList.remove("d-none");
-};
-/**
  * hideElement(ele) adds the "d-none" class to the given element to hide it.
  * @param elm
  */
@@ -247,9 +240,7 @@ function postComment(comment, imageId) {
                 commentId: Date.now().toString(),
                 userName: userName
             })
-        }).then((post) => {
-            getComments(imageId)
-        })
+        }).then(() => {getComments(imageId)})
             .catch((error) => console.error(JSON.parse(JSON.stringify(error))))
     })();
 }
@@ -452,58 +443,29 @@ function writeComments2dom(content, imageId) {
 /**
  * @param imageId
  * getComments(imageId) makes a GET request to the server
- * to retrieve the comments for the image with the given ID
- * and then writes the comments to the DOM.
- */
-function autoGetComments(imageId) {
-    // Asynchronously send a GET request to the server to retrieve the comments for the given image
-    (async () => {
-
-        const rawResponse = await fetch('/auto/show_comments/' + imageId, {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-        });
-        // Convert the response to JSON
-        const content = await rawResponse.json();
-
-        // Write the comments to the DOM
-        writeComments2dom(content, imageId);
-
-
-        //console.log(JSON.parse(JSON.stringify(error)));
-
-    })();
-}
-
-/**
- * @param imageId
- * getComments(imageId) makes a GET request to the server
  * to retrieve the comments immediately for the image with the given ID
  * and then writes the comments to the DOM.
  */
 function getComments(imageId) {
     // Asynchronously send a GET request to the server to retrieve the comments immediately for the given image
     (async () => {
-        // try {
+        try {
         const rawResponse = await fetch('/show_comments/' + imageId, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-        });
+        }).catch();
         // Convert the response to JSON
         const content = await rawResponse.json();
 
         // Write the comments to the DOM
         writeComments2dom(content, imageId);
 
-        // } catch (error) {
-        //     console.error(JSON.parse(JSON.stringify(error)));
-        // }
+        } catch (error) {
+            console.error(JSON.parse(JSON.stringify(error)));
+        }
     })();
 }
 
@@ -523,7 +485,7 @@ function deleteComment(imageId, commentId) {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
                 },
-            });
+            }).catch();
             const content = await rawResponse.json();
             console.log(content);
 

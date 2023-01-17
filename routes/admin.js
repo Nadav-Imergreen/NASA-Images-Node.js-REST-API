@@ -13,8 +13,6 @@ router.post('/register-password', passwordController.postPasswordPage);
 
 router.post('/submit_comment', nasaController.postComment);
 
-router.get('/auto/show_comments/:imageId', nasaController.autoGetComments);
-
 router.get('/show_comments/:imageId', nasaController.getComments);
 
 router.delete('/delete_comment/:imageId/:commentId', nasaController.deleteComment);
