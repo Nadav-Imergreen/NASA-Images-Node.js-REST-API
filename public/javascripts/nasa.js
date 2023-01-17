@@ -186,6 +186,12 @@ function appendComment(imageId) {
     const col2 = createCol();
     const col3 = createCol();
 
+
+    // create an icon element using a pen icon from the bi font library
+    let pen = document.createElement('i');
+    pen.classList.add('bi');
+    pen.classList.add('bi-pencil-square');
+
     // creating button and comment form
     const commentButton = createButtonElement(imageId, 'add comment');
     const commentForm = document.createElement('form');
@@ -198,7 +204,7 @@ function appendComment(imageId) {
     // append button to data container
     document.getElementById("mainCol1" + imageId).appendChild(row1);
     row1.appendChild(col1);
-    col1.append(commentButton)
+    col1.appendChild(commentButton).appendChild(pen);
 
     commentForm.appendChild(newField);
 
@@ -549,11 +555,16 @@ function buildCommentsTable(imageId) {
     const col1 = createCol();
     const col2 = createCol();
 
+    // create an icon element using a eye icon from the bi font library
+    let eye = document.createElement('i');
+    eye.classList.add('bi');
+    eye.classList.add('bi-eye-fill');
+
     // create show comments button
     const showCommentsButton = createButtonElement(imageId, 'show comments');
     showCommentsButton.setAttribute('type', 'click');
     document.getElementById('comment buttons row' + imageId.toString()).appendChild(col1);
-    col1.appendChild(showCommentsButton);
+    col1.appendChild(showCommentsButton).appendChild(eye);
 
     // creating basic comment cols
     const commentTable = document.createElement('table');
@@ -679,9 +690,15 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(response => response.json())
             .then(jason => showData(jason));
 
+
+        // create an icon element using a dots icon from the bi font library
+        let more = document.createElement('i');
+        more.classList.add('bi');
+        more.classList.add('bi-three-dots');
+
         // add load more button to website
         let loadMoreButton = createButtonElement(0, "Load more");
-        document.getElementById('data').appendChild(loadMoreButton);
+        document.getElementById('data').appendChild(loadMoreButton).appendChild(more);
 
         // Add an event listener to the load more button
         /**
