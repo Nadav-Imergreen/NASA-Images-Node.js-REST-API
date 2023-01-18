@@ -81,7 +81,7 @@ function appendDateAndTitle(obg) {
     let date = document.createElement('p');
     let title = document.createElement('b');
 
-    document.getElementById("mainCol1" + obg.date).appendChild(cardHeader);
+    document.getElementById("mainCol2" + obg.date).appendChild(cardHeader);
     // add photo title
     cardHeader.appendChild(row1);
     row1.appendChild(titleCol);
