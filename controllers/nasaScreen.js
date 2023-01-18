@@ -9,6 +9,11 @@
  */
 exports.getNasaPage = (req, res) => {
     //render nasa view if user is longed-in. else, return user to login page
-    req.session.login === true ? res.render('nasa') : res.redirect('/');
+    req.session.login? res.render('nasa') : res.redirect('/');
 };
 
+exports.leaveNasaPage = (req, res) => {
+    //render nasa view if user is longed-in. else, return user to login page
+    req.session.login = false;
+    res.redirect('/');
+};

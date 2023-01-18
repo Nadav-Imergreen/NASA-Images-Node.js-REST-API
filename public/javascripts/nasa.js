@@ -22,15 +22,17 @@ async function getData(startDate, endDate) {
     startDate = date2string(startDate);
     endDate = date2string(endDate);
 
-    // try to read data from NASA API according to specific date
-    try {
-        let fetchURL = 'https://api.nasa.gov/planetary/apod?api_key=EIm8OYB6igafcAuNdOu0bj5NXDv3bkcI69bBLNv0&start_date=' + startDate + '&end_date=' + endDate;
-        return await fetch(fetchURL).then(status);
-    } catch (err) {
-        document.querySelector("#data").innerHTML = "Something went wrong: " + err
-    }
+    // read data from NASA API according to specific date
+    let fetchURL = 'https://api.nasa.gov/planetary/apod?api_key=EIm8OYB6igafcAuNdOu0bj5NXDv3bkcI69bBLNv0&start_date=' + startDate + '&end_date=' + endDate;
+    return await fetch(fetchURL).then(status);
 }
-
+/**
+ * showElement(ele) remove the "d-none" class to the given element to reveal it.
+ * @param elm
+ */
+const showElement = (elm) => {
+    elm.classList.remove("d-none");
+};
 /**
  * hideElement(ele) adds the "d-none" class to the given element to hide it.
  * @param elm
@@ -246,8 +248,9 @@ function postComment(comment, imageId) {
                 commentId: Date.now().toString(),
                 userName: userName
             })
-        }).then(() => {getComments(imageId)})
-            .catch((error) => console.error(JSON.parse(JSON.stringify(error))))
+        }).then(res => res.json())
+            .then(content => writeComments2dom(content, imageId))
+            .catch((error) => console.log(JSON.parse(JSON.stringify(error))))
     })();
 }
 
@@ -455,23 +458,16 @@ function writeComments2dom(content, imageId) {
 function getComments(imageId) {
     // Asynchronously send a GET request to the server to retrieve the comments immediately for the given image
     (async () => {
-        try {
-        const rawResponse = await fetch('/show_comments/' + imageId, {
+        await fetch('/show_comments/' + imageId, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-        }).catch();
-        // Convert the response to JSON
-        const content = await rawResponse.json();
-
-        // Write the comments to the DOM
-        writeComments2dom(content, imageId);
-
-        } catch (error) {
-            console.error(JSON.parse(JSON.stringify(error)));
-        }
+            //Convert the response to JSON, and write the comments to DOM
+        }).then(res => res.json())
+            .then(content => writeComments2dom(content, imageId))
+            .catch((error) => console.log(JSON.parse(JSON.stringify(error))))
     })();
 }
 
@@ -484,22 +480,15 @@ function getComments(imageId) {
  */
 function deleteComment(imageId, commentId) {
     (async () => {
-        try {
-            const rawResponse = await fetch('/delete_comment/' + imageId + '/' + commentId, {
-                method: 'DELETE',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-            }).catch();
-            const content = await rawResponse.json();
-            console.log(content);
-
-            writeComments2dom(content, imageId);
-
-        } catch (error) {
-            console.error(JSON.parse(JSON.stringify(error)));
-        }
+        await fetch('/delete_comment/' + imageId + '/' + commentId, {
+            method: 'DELETE',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+        }).then(res => res.json())
+            .then(content => writeComments2dom(content, imageId))
+            .catch((error) => console.log(JSON.parse(JSON.stringify(error))))
     })();
 }
 
@@ -512,12 +501,12 @@ function deleteComment(imageId, commentId) {
  */
 function handleClickEvents(imageId) {
 
-    let commentFormEle = document.getElementById('comment form' + imageId.toString());
-    let commentEle = document.getElementById("comment" + imageId.toString());
-    let commentTable = document.getElementById("comment table" + imageId.toString());
-    let addCommentButton = document.getElementById("add comment button" + imageId.toString());
-    let showCommentButton = document.getElementById("show comments button" + imageId.toString());
-    let submitCommentButton = document.getElementById("submitComment button" + imageId.toString());
+    const commentFormEle = document.getElementById('comment form' + imageId.toString());
+    const commentEle = document.getElementById("comment" + imageId.toString());
+    const commentTable = document.getElementById("comment table" + imageId.toString());
+    const addCommentButton = document.getElementById("add comment button" + imageId.toString());
+    const showCommentButton = document.getElementById("show comments button" + imageId.toString());
+    const submitCommentButton = document.getElementById("submitComment button" + imageId.toString());
 
     // by pressing appendComments button show/hide comment form
     addCommentButton.addEventListener("click", () => {
@@ -528,11 +517,6 @@ function handleClickEvents(imageId) {
     showCommentButton.addEventListener("click", () => {
         getComments(imageId);
         toggleElement(commentTable);
-
-        // update comments every 15 seconds if any change happened
-        // setInterval(function () {
-        //     autoGetComments(imageId)
-        // }, 15000);
     });
 
     // by pressing submit comments - post comment to server
@@ -647,6 +631,20 @@ function removeChildren(element) {
     }
 }
 
+function signOut() {
+    // Asynchronously send a GET request to the server to sign out from nasa page
+    (async () => {
+        await fetch('/sign_out', {
+            method: 'GET',
+            redirect: 'follow',
+        }).then(res => {
+            window.location.href = res.url;
+        }).catch(function (err) {
+            console.info(err + " url: /sign_out");
+        });
+    })();
+}
+
 //--------------------------------------------------
 /**
  * document.addEventListener('DOMContentLoaded', ...):
@@ -654,9 +652,22 @@ function removeChildren(element) {
  */
 document.addEventListener('DOMContentLoaded', () => {
 
+    const loadMoreElement = document.getElementById("load more");
+    const dataElement = document.getElementById('data');
+    const signOutElement = document.getElementById("sign out");
+    const submitElement = document.getElementById("submit date");
+
     let userName = localStorage.getItem('userName').split('@')[0];
-    let text = document.createTextNode('Welcome! ' + userName + ' good to see you');
+    let text = document.createTextNode('Welcome ' + userName + '! good to see you');
     document.getElementById('welcomeText').appendChild(text);
+
+    /**
+     * This function sets up an event listener for the "sign out" button.
+     * when clicked, user session ends, and redirect back to login page
+     */
+    signOutElement.addEventListener("click", () => {
+        signOut();
+    });
 
     // db.Contact.findOne({where:{title: userName}, attributes:'firstName'})
     //     .then((person) => {
@@ -667,15 +678,14 @@ document.addEventListener('DOMContentLoaded', () => {
      *  This function sets up an event listener for the "submit date" button.
      *  When the button is clicked, the code inside the function is run.
      *  This code prevents the default action of the button (which is to submit a form),
-     *  reads the date limit from the "getDate" input field, sets the start date to show photos from the given date,
-     *  gets photos from the NASA API, and sets up an event listener for the "load-more-button" element
-     *  to load more photos from the API when clicked.
+     *  reads the date limit from the "getDate" input field,
+     *  sets the start date to show photos from the given date.
      */
-    document.getElementById("submit date").addEventListener("click", (event) => {
+    submitElement.addEventListener("click", (event) => {
         event.preventDefault();
 
         // remove old data before loading new data
-        removeChildren(document.getElementById('data'));
+        removeChildren(dataElement);
 
         // Read date limit from user input
         const userInput = document.getElementById("getDate").value.split("-");
@@ -688,25 +698,17 @@ document.addEventListener('DOMContentLoaded', () => {
         // Get photos from nasa api
         getData(startDate, endDate)
             .then(response => response.json())
-            .then(jason => showData(jason));
-
-
-        // create an icon element using a dots icon from the bi font library
-        let more = document.createElement('i');
-        more.classList.add('bi');
-        more.classList.add('bi-three-dots');
-
-        // add load more button to website
-        let loadMoreButton = createButtonElement(0, "Load more");
-        document.getElementById('data').appendChild(loadMoreButton).appendChild(more);
+            .then(json => showData(json))
+            .then(()=> showElement(loadMoreElement))
+            .catch(err => document.querySelector("#data").innerHTML = "Something went wrong: " + err)
 
         // Add an event listener to the load more button
         /**
-         * This function listens for a click event on the element with the id "load-more-button".
+         * This function listens for a click event on the element with the id "load-more".
          * When the button is clicked, the start and end dates are decremented and the function "getData" is called with the updated start and end dates.
          * The function "showData" is called with the response from the "getData" function when it resolves.
          */
-        document.getElementById("Load more button0").addEventListener('click', function () {
+        loadMoreElement.addEventListener('click', function () {
             // Decrement the start and end dates to show more photos
             startDate.setDate(startDate.getDate() - 1);
             endDate = startDate;
@@ -715,7 +717,8 @@ document.addEventListener('DOMContentLoaded', () => {
             // Load more photos from nasa api
             getData(startDate, endDate)
                 .then(response => response.json())
-                .then(jason => showData(jason));
+                .then(jason => showData(jason))
+                .catch(err => document.querySelector("#data").innerHTML = "Something went wrong: " + err)
         });
     });
 });

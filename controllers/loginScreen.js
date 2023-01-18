@@ -12,7 +12,6 @@ exports.getLoginPage = (req, res) => {
         res.redirect('/nasa/photos');
     else
     res.render('index', {
-        title: 'Express',
         RegistrationSucceeded: false,
         wrongEntryDetails: false
     });

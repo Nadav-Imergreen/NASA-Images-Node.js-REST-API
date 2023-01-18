@@ -14,31 +14,31 @@
 <body>
 <div class="row">
     <div class="col-3 ">
-        <button type="button" class="btn btn-secondary">Sign out <i class="bi bi-door-closed"></i></button>
+        <button type="button" class="btn btn-secondary" id="sign out">Sign out <i class="bi bi-door-closed"></i></button>
     </div>
     <div class="col-6">
         <img src='/images/0.png' class="mx-auto d-block" alt="Company logo">
     </div>
 </div>
 
-<div class="row">
-    <div class="col-md-5 mx-auto">
-        <div class="text-center">
-            <h3 id="welcomeText"></h3>
+<div class="container">
+    <div class="text-center">
+        <div class="row">
+            <div class="col-md-5 mx-auto">
+                <h3 id="welcomeText"></h3></div>
         </div>
-        <div id="web content">
-            <div class="container">
-                <form id="date form">
-                    <label for="getDate">since when do you want "N.A.S.A. - photos of day"?</label><br>
-                    <input type="date" id="getDate"><br>
-                    <button type="submit" id="submit date" class="btn btn-primary my-3">Submit</button>
-                </form>
-
-            </div>
-        </div>
+        <form id="date form">
+            <label for="getDate">since when do you want "N.A.S.A. - photos of day"?</label><br>
+            <input type="date" id="getDate"><br>
+            <button type="submit" id="submit date" class="btn btn-primary my-3">Submit</button>
+        </form>
     </div>
 </div>
-<div id="data"></div>
+<div class="container">
+    <div id="data"></div>
+    <button type="button"  id="load more" class="btn btn-primary my-3 d-none">Load more</button>
+</div>
+
 
 <script>
 

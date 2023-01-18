@@ -13,4 +13,6 @@ router.get('/register-password', passwordController.getPasswordPage);
 
 router.get('/nasa/photos', nasaController.getNasaPage);
 
+router.get('/sign_out', nasaController.leaveNasaPage);
+
 module.exports = router;
