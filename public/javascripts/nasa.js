@@ -70,6 +70,9 @@ function status(response) {
  */
 function appendDateAndTitle(obg) {
 
+    const cardHeader = document.createElement('div');
+    cardHeader.classList.add('card-header');
+
     // create rows&cols elements
     const row1 = createRow();
     const dateCol = createCol();
@@ -78,8 +81,9 @@ function appendDateAndTitle(obg) {
     let date = document.createElement('p');
     let title = document.createElement('b');
 
-    document.getElementById("mainCol1" + obg.date).appendChild(row1);
+    document.getElementById("mainCol1" + obg.date).appendChild(cardHeader);
     // add photo title
+    cardHeader.appendChild(row1);
     row1.appendChild(titleCol);
     titleCol.appendChild(title);
     title.classList.add('card-title');
@@ -205,14 +209,18 @@ function appendComment(imageId) {
     submitComment.setAttribute('type', 'submit');
 
     // append button to data container
-    document.getElementById("mainCol1" + imageId).appendChild(row1);
+    const cardFooter = document.createElement('div');
+    cardFooter.classList.add('card-footer');
+    document.getElementById("mainCol1" + imageId).appendChild(cardFooter);
+
+    cardFooter.appendChild(row1);
     row1.appendChild(col1);
     col1.appendChild(commentButton).appendChild(pen);
 
     commentForm.appendChild(newField);
 
     // append comment to data container and hide
-    document.getElementById("mainCol1" + imageId).appendChild(row2);
+    cardFooter.appendChild(row2);
     row2.appendChild(col2);
     col2.appendChild(commentForm);
 
@@ -262,6 +270,8 @@ function postComment(comment, imageId) {
 function appendExplanation(obg) {
 
     // create rows&cols elements
+    const cardBody = document.createElement('div');
+    cardBody.classList.add('card-body');
     const row = createRow();
     const col = createCol();
 
@@ -270,7 +280,8 @@ function appendExplanation(obg) {
     explanationElement.setAttribute('id', 'explanation' + obg.date);
 
     // append explanation to data container and hide
-    document.getElementById("mainCol2" + obg.date).appendChild(row);
+    document.getElementById("mainCol2" + obg.date).appendChild(cardBody);
+    cardBody.appendChild(row);
     row.appendChild(col);
     col.append(explanationElement);
     explanationElement.append(obg.explanation)
@@ -334,14 +345,13 @@ function createDataTable(imageId) {
     //create cards for each col im row
     const card1 = document.createElement('div');
     const card2 = document.createElement('div');
-    const cardBody1 = document.createElement('div');
-    const cardBody2 = document.createElement('div');
+    const cardBody = document.createElement('div');
+
     card1.classList.add('card');
     card2.classList.add('card');
-    cardBody1.classList.add('card-body');
-    cardBody2.classList.add('card-body');
-    cardBody1.setAttribute('id', "mainCol1" + imageId); // Set an ID for the column
-    cardBody2.setAttribute('id', "mainCol2" + imageId); // Set an ID for the column
+    cardBody.classList.add('card-body');
+    card1.setAttribute('id', "mainCol1" + imageId); // Set an ID for the column
+    card2.setAttribute('id', "mainCol2" + imageId); // Set an ID for the column
 
     // insert the container into the HTML div container with the "data" ID
     document.getElementById("data").appendChild(container);
@@ -350,11 +360,10 @@ function createDataTable(imageId) {
     container.appendChild(row);
     row.appendChild(col1);
     col1.appendChild(card1);
-    card1.appendChild(cardBody1);
+    card1.appendChild(cardBody);
 
     row.appendChild(col2);
     col2.appendChild(card2)
-    card2.appendChild(cardBody2);
 }
 
 /**
@@ -573,7 +582,12 @@ function buildCommentsTable(imageId) {
     th4.innerText = 'delete';
 
     // append to html data
-    document.getElementById('mainCol1' + imageId).appendChild(row1);
+    const cardFooter = document.createElement('div');
+    cardFooter.classList.add('card-footer');
+    cardFooter.classList.add('border-success');
+    cardFooter.classList.add('bg-transparent');
+    document.getElementById("mainCol1" + imageId).appendChild(cardFooter);
+    cardFooter.appendChild(row1)
     row1.appendChild(col2);
     col2.appendChild(commentTable);
     commentTable.appendChild(thead);
