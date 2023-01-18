@@ -26,6 +26,7 @@ async function getData(startDate, endDate) {
     let fetchURL = 'https://api.nasa.gov/planetary/apod?api_key=EIm8OYB6igafcAuNdOu0bj5NXDv3bkcI69bBLNv0&start_date=' + startDate + '&end_date=' + endDate;
     return await fetch(fetchURL).then(status);
 }
+
 /**
  * showElement(ele) remove the "d-none" class to the given element to reveal it.
  * @param elm
@@ -436,8 +437,8 @@ function writeComments2dom(content, imageId) {
         tr.appendChild(td2);
 
         // creates a delete button element next to comment if this user write this comment.
-        // if (comment.userName === document.getElementById('username input').value)
-        creteDeleteOption(comment, tr);
+        if (comment.userName === localStorage.getItem('userName').split('@')[0])
+            creteDeleteOption(comment, tr);
 
         // add an event listener to the delete button to delete the comment when clicked
         let deleteEle = document.getElementById('deleteComment' + comment.commentId)
@@ -654,9 +655,9 @@ function createSpinner() {
     srOnly.classList.add('sr-only');
     srOnly.innerHTML = 'Loading...';
     spinner.appendChild(srOnly);
-    document.getElementById('load more').appendChild(spinner);
-
+    return spinner;
 }
+
 //--------------------------------------------------
 /**
  * document.addEventListener('DOMContentLoaded', ...):
@@ -668,8 +669,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const dataElement = document.getElementById('data');
     const signOutElement = document.getElementById("sign out");
     const submitElement = document.getElementById("submit date");
-    const spinnerElement =document.getElementById("spinner");
 
+    // extract username from ejs page and display welcome message on screen
     let userName = localStorage.getItem('userName').split('@')[0];
     let text = document.createTextNode('Welcome ' + userName + '! good to see you');
     document.getElementById('welcomeText').appendChild(text);
@@ -709,14 +710,14 @@ document.addEventListener('DOMContentLoaded', () => {
         let startDate = getStartDate(endDate);
 
         // create spinner for loading
-        createSpinner();
-        submitElement.appendChild(document.getElementById("spinner"));
+        let spinner = createSpinner();
+        submitElement.appendChild(spinner);
 
         // Get photos from nasa api
         getData(startDate, endDate)
             .then(response => response.json())
             .then(json => showData(json))
-            .then(()=> showElement(loadMoreElement))
+            .then(() => showElement(loadMoreElement))
             .finally(() => submitElement.removeChild(document.getElementById("spinner")))
             .catch(err => document.querySelector("#data").innerHTML = "Something went wrong: " + err)
 
@@ -733,8 +734,8 @@ document.addEventListener('DOMContentLoaded', () => {
             startDate = getStartDate(endDate);
 
             // create spinner for loading
-            createSpinner();
-            loadMoreElement.appendChild(document.getElementById("spinner"));
+            let spinner = createSpinner();
+            loadMoreElement.appendChild(spinner);
 
             // Load more photos from nasa api
             getData(startDate, endDate)
