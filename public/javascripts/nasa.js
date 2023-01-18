@@ -645,6 +645,18 @@ function signOut() {
     })();
 }
 
+function createSpinner() {
+    const spinner = document.createElement('div');
+    spinner.setAttribute('id', 'spinner');
+    spinner.classList.add('spinner-border');
+    spinner.setAttribute('role', 'status');
+    const srOnly = document.createElement('span');
+    srOnly.classList.add('sr-only');
+    srOnly.innerHTML = 'Loading...';
+    spinner.appendChild(srOnly);
+    document.getElementById('load more').appendChild(spinner);
+
+}
 //--------------------------------------------------
 /**
  * document.addEventListener('DOMContentLoaded', ...):
@@ -656,6 +668,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const dataElement = document.getElementById('data');
     const signOutElement = document.getElementById("sign out");
     const submitElement = document.getElementById("submit date");
+    const spinnerElement =document.getElementById("spinner");
 
     let userName = localStorage.getItem('userName').split('@')[0];
     let text = document.createTextNode('Welcome ' + userName + '! good to see you');
@@ -695,11 +708,16 @@ document.addEventListener('DOMContentLoaded', () => {
         // Set start date to show photos from
         let startDate = getStartDate(endDate);
 
+        // create spinner for loading
+        createSpinner();
+        submitElement.appendChild(document.getElementById("spinner"));
+
         // Get photos from nasa api
         getData(startDate, endDate)
             .then(response => response.json())
             .then(json => showData(json))
             .then(()=> showElement(loadMoreElement))
+            .finally(() => submitElement.removeChild(document.getElementById("spinner")))
             .catch(err => document.querySelector("#data").innerHTML = "Something went wrong: " + err)
 
         // Add an event listener to the load more button
@@ -714,10 +732,15 @@ document.addEventListener('DOMContentLoaded', () => {
             endDate = startDate;
             startDate = getStartDate(endDate);
 
+            // create spinner for loading
+            createSpinner();
+            loadMoreElement.appendChild(document.getElementById("spinner"));
+
             // Load more photos from nasa api
             getData(startDate, endDate)
                 .then(response => response.json())
                 .then(jason => showData(jason))
+                .finally(() => loadMoreElement.removeChild(document.getElementById("spinner")))
                 .catch(err => document.querySelector("#data").innerHTML = "Something went wrong: " + err)
         });
     });
