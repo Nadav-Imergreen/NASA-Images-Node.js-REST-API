@@ -664,6 +664,9 @@ function createSpinner() {
  * This function waits for the HTML document to finish loading before running the code inside it.
  */
 document.addEventListener('DOMContentLoaded', () => {
+    // vars to specify limited range for nasa photos
+    let endDate;
+    let startDate;
 
     const loadMoreElement = document.getElementById("load more");
     const dataElement = document.getElementById('data');
@@ -703,11 +706,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Read date limit from user input
         const userInput = document.getElementById("getDate").value.split("-");
-        let endDate;
+
         userInput.length === 3 ? endDate = new Date(userInput) : endDate = new Date();
 
         // Set start date to show photos from
-        let startDate = getStartDate(endDate);
+        startDate = getStartDate(endDate);
 
         // create spinner for loading
         let spinner = createSpinner();
@@ -721,28 +724,28 @@ document.addEventListener('DOMContentLoaded', () => {
             .finally(() => submitElement.removeChild(document.getElementById("spinner")))
             .catch(err => document.querySelector("#data").innerHTML = "Something went wrong: " + err)
 
-        // Add an event listener to the load more button
-        /**
-         * This function listens for a click event on the element with the id "load-more".
-         * When the button is clicked, the start and end dates are decremented and the function "getData" is called with the updated start and end dates.
-         * The function "showData" is called with the response from the "getData" function when it resolves.
-         */
-        loadMoreElement.addEventListener('click', function () {
-            // Decrement the start and end dates to show more photos
-            startDate.setDate(startDate.getDate() - 1);
-            endDate = startDate;
-            startDate = getStartDate(endDate);
+    });
+    // Add an event listener to the load more button
+    /**
+     * This function listens for a click event on the element with the id "load-more".
+     * When the button is clicked, the start and end dates are decremented and the function "getData" is called with the updated start and end dates.
+     * The function "showData" is called with the response from the "getData" function when it resolves.
+     */
+    loadMoreElement.addEventListener('click', function () {
+        // Decrement the start and end dates to show more photos
+        startDate.setDate(startDate.getDate() - 1);
+        endDate = startDate;
+        startDate = getStartDate(endDate);
 
-            // create spinner for loading
-            let spinner = createSpinner();
-            loadMoreElement.appendChild(spinner);
+        // create spinner for loading
+        let spinner = createSpinner();
+        loadMoreElement.appendChild(spinner);
 
-            // Load more photos from nasa api
-            getData(startDate, endDate)
-                .then(response => response.json())
-                .then(jason => showData(jason))
-                .finally(() => loadMoreElement.removeChild(document.getElementById("spinner")))
-                .catch(err => document.querySelector("#data").innerHTML = "Something went wrong: " + err)
-        });
+        // Load more photos from nasa api
+        getData(startDate, endDate)
+            .then(response => response.json())
+            .then(jason => showData(jason))
+            .finally(() => loadMoreElement.removeChild(document.getElementById("spinner")))
+            .catch(err => document.querySelector("#data").innerHTML = "Something went wrong: " + err)
     });
 });
