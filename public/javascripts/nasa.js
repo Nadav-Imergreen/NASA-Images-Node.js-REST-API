@@ -326,18 +326,22 @@ function createDataTable(imageId) {
     const row = createRow();
     const col1 = createCol();
     const col2 = createCol();
-    col1.classList.add("col-12") // Bootstrap class for creating a full-width column
-    col1.classList.add("col-md-6") // Bootstrap class for creating a half-width column on large screens
+    col1.classList.add("col-12");// Bootstrap class for creating a full-width column
+    col1.classList.add("col-md-6"); // Bootstrap class for creating a half-width column on large screens
     col2.classList.add("col-12");
     col2.classList.add("col-md-6");
 
     //create cards for each col im row
     const card1 = document.createElement('div');
     const card2 = document.createElement('div');
+    const cardBody1 = document.createElement('div');
+    const cardBody2 = document.createElement('div');
     card1.classList.add('card');
     card2.classList.add('card');
-    card1.setAttribute('id', "mainCol1" + imageId); // Set an ID for the column
-    card2.setAttribute('id', "mainCol2" + imageId); // Set an ID for the column
+    cardBody1.classList.add('card-body');
+    cardBody2.classList.add('card-body');
+    cardBody1.setAttribute('id', "mainCol1" + imageId); // Set an ID for the column
+    cardBody2.setAttribute('id', "mainCol2" + imageId); // Set an ID for the column
 
     // insert the container into the HTML div container with the "data" ID
     document.getElementById("data").appendChild(container);
@@ -345,11 +349,12 @@ function createDataTable(imageId) {
     // insert row & 2 cols to the container
     container.appendChild(row);
     row.appendChild(col1);
-    col1.appendChild(card1)
+    col1.appendChild(card1);
+    card1.appendChild(cardBody1);
 
-    // prepare cols card
     row.appendChild(col2);
     col2.appendChild(card2)
+    card2.appendChild(cardBody2);
 }
 
 /**
@@ -678,6 +683,17 @@ document.addEventListener('DOMContentLoaded', () => {
     let text = document.createTextNode('Welcome ' + userName + '! good to see you');
     document.getElementById('welcomeText').appendChild(text);
 
+    // insert userName to sign-out button
+    let p = document.createElement('p');
+    p.innerHTML = userName;
+    signOutElement.appendChild(p);
+
+    // db.Contact.findOne({where:{title: userName}, attributes:'firstName'})
+    //     .then((person) => {
+    //         let text = document.createTextNode('Welcome! ' + person.firstName + ' good to see you');
+    //         document.getElementById('welcomeText').appendChild(text);})
+    //     .catch()
+
     /**
      * This function sets up an event listener for the "sign out" button.
      * when clicked, user session ends, and redirect back to login page
@@ -686,11 +702,6 @@ document.addEventListener('DOMContentLoaded', () => {
         signOut();
     });
 
-    // db.Contact.findOne({where:{title: userName}, attributes:'firstName'})
-    //     .then((person) => {
-    //         let text = document.createTextNode('Welcome! ' + person.firstName + ' good to see you');
-    //         document.getElementById('welcomeText').appendChild(text);})
-    //     .catch()
     /**
      *  This function sets up an event listener for the "submit date" button.
      *  When the button is clicked, the code inside the function is run.
@@ -725,7 +736,6 @@ document.addEventListener('DOMContentLoaded', () => {
             .catch(err => document.querySelector("#data").innerHTML = "Something went wrong: " + err)
 
     });
-    // Add an event listener to the load more button
     /**
      * This function listens for a click event on the element with the id "load-more".
      * When the button is clicked, the start and end dates are decremented and the function "getData" is called with the updated start and end dates.
