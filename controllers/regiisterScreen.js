@@ -74,11 +74,14 @@ exports.postRegisterPage = (req, res) => {
     cookies.set('userDetails', JSON.stringify(newCookie), {signed: true, maxAge: 30 * 1000});
     // check if the email address has already been registered
     db.Contact.findOne({where: {mail: req.body.email}}).then(user => {
-        if (user) {
+        if (user) { // email in used
             // set a new cookie indicating that the email address is already in use
             cookies.set('refresh', 'errorExist', {signed: true, maxAge: 1000});
             res.redirect('/register');
-        } else
-            res.redirect('register-password');
+        } else  // new user
+        {
+           req.session.firstName = req.body.firstName;
+           res.redirect('register-password');
+        }
     }).catch()
 };

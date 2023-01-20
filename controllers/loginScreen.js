@@ -33,6 +33,7 @@ exports.postLoginPage = (req, res) => {
             // compares plaintext password with the hashed password
             if (bcrypt.compareSync(req.body.password, user.password)) {
                 req.session.login = true;
+                req.session.email = req.body.userName;
                 res.redirect('/nasa/photos');
             } else
                 res.render('index', {

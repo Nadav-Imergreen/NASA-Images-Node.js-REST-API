@@ -689,24 +689,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const loadMoreElement = document.getElementById("load more");
     const dataElement = document.getElementById('data');
+    const navbarElement = document.getElementById("navbar username");
     const signOutElement = document.getElementById("sign out");
     const submitElement = document.getElementById("submit date");
 
-    // extract username from ejs page and display welcome message on screen
-    let userName = localStorage.getItem('userName').split('@')[0];
-    let text = document.createTextNode('Welcome ' + userName + '! good to see you');
-    document.getElementById('welcomeText').appendChild(text);
+    // // extract username from ejs page and display welcome message on screen
+    // let text = document.createTextNode('Welcome ' + userName + '! good to see you');
+    // document.getElementById('welcomeText').appendChild(text);
 
     // insert userName to sign-out button
     let p = document.createElement('p');
-    p.innerHTML = userName;
-    signOutElement.appendChild(p);
-
-    // db.Contact.findOne({where:{title: userName}, attributes:'firstName'})
-    //     .then((person) => {
-    //         let text = document.createTextNode('Welcome! ' + person.firstName + ' good to see you');
-    //         document.getElementById('welcomeText').appendChild(text);})
-    //     .catch()
+    p.innerHTML =  localStorage.getItem('userName');
+    navbarElement.appendChild(p);
 
     /**
      * This function sets up an event listener for the "sign out" button.

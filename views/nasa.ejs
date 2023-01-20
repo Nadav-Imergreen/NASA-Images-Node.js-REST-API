@@ -12,27 +12,31 @@
 
 </head>
 <body>
-<div class="row">
-    <div class="col-3 ">
-        <button type="button" class="btn btn-secondary" id="sign out">Sign out <i class="bi bi-door-closed"></i>
-        </button>
+<nav class="navbar" style="background-color: #e3f2fd;">
+    <div class="container-fluid">
+        <div><a class="navbar-brand" href='/'>NASA</a>
+            <span class="navbar-text" id="navbar username"></span>
+        </div>
+        <button type="button" class="btn btn-secondary" id="sign out">Sign out
+            <i class="bi bi-door-closed"></i></button>
     </div>
-    <div class="col-6">
-        <img src='/images/0.png' class="mx-auto d-block" alt="Company logo">
-    </div>
+</nav>
+
+<div class="text center">
+    <img src='/images/0.png' class="mx-auto d-block" alt="Company logo">
 </div>
 
 <div class="container">
     <div class="text-center">
         <div class="row">
             <div class="col-md-5 mx-auto">
-                <h3 id="welcomeText"></h3></div>
+                <h3 id="welcomeText"></h3>'Welcome <%= name %>! good to see you'</div>
         </div>
         <form id="date form">
             <label for="getDate">since when do you want "N.A.S.A. - photos of day"?</label><br>
             <input type="date" id="getDate" class="my-3">
             <button type="submit" id="submit date" class="btn btn-dark btn-sm m-2">
-                     <i class="bi bi-send"></i></button>
+                <i class="bi bi-send"></i></button>
         </form>
     </div>
 </div>

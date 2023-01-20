@@ -70,9 +70,9 @@ function hashPassword(data, password) {
     bcrypt.hash(password, 10)
         .then(hash => {
             db.Contact.create({
-                firstName: data.firstName,
-                lastName: data.lastName,
-                mail: data.email,
+                firstName: data.firstName.trim(),
+                lastName: data.lastName.trim(),
+                mail: data.email.trim(),
                 password: hash.toString()
             });
         })
