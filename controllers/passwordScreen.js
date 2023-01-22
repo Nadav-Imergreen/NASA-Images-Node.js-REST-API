@@ -3,7 +3,7 @@ const keys = ['keyboard cat'];
 const Cookies = require("cookies");
 const db = require('../models')
 const error = require('./error');
-const bcrypt = require("bcrypt")
+const bcrypt = require("bcrypt");
 
 /**
  This router uses cookies to check if the user has already registered,

@@ -7,6 +7,7 @@ const session = require('express-session')
 
 var adminRouter = require('./routes/admin');
 var usersRouter = require('./routes/users');
+var commentRouter = require('./routes/commentRouter');
 
 var app = express();
 
@@ -31,6 +32,7 @@ app.use(session({
 
 app.use(adminRouter);
 app.use(usersRouter);
+app.use(commentRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -38,7 +40,7 @@ app.use(function(req, res, next) {
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function(err, req, res) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};

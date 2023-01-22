@@ -1,6 +1,16 @@
 const db = require('../models');
 
 /**
+ * a middleware router that check if user is login to site before every request
+ * @param req
+ * @param res
+ * @param next
+ */
+exports.checkSession = (req, res, next) => {
+    req.session.login ? next() : res.status(400).send({'message': 'login required'});
+};
+
+/**
  * Immediately GET a list of comments for a specific image.
  */
 exports.getComments = (req, res) => {
@@ -31,7 +41,7 @@ exports.postComment = (req, res) => {
         // Find all comments for the current image, and send to client
         db.Comment.findAll({where: {imageId: req.body.imageId}, attributes: ['userName', 'comment', 'commentId']})
             .then(post => {
-                res.json(post);
+                res.json(post)
                 res.end();
             })
             .catch((err)=>{res.send(err)});
@@ -57,7 +67,7 @@ exports.deleteComment = (req, res) => {
             // Find all comments for the current image, and send the updated comments as a response
             db.Comment.findAll({where: {imageId: req.params.imageId}, attributes: ['userName', 'comment', 'commentId']})
                 .then(post => {
-                    res.json(post);
+                    res.json(post)
                     res.end();
                 })
                 .catch((err) => {

@@ -58,10 +58,14 @@ const toggleElement = (elm) => {
  */
 function status(response) {
     if (response.status >= 200 && response.status < 300) {
-        return Promise.resolve(response)
-    } else {
-        return Promise.reject(new Error(response.statusText))
-    }
+        return Promise.resolve(response);
+    } else
+        response.json().then(json => {
+            if (json.msg)
+                document.querySelector("#data").innerHTML = json.msg;
+            if (json.error.message)
+                document.querySelector("#data").innerHTML = json.error.message;
+        });
 }
 
 /**
@@ -240,10 +244,11 @@ function appendComment(imageId) {
  * @param imageId
  */
 function postComment(comment, imageId) {
-
-    let userName = localStorage.getItem('userName').split('@')[0];
-
+    let errorString = document.getElementById('error' + imageId);
     (async () => {
+
+        if (errorString)  // remove error message if exist
+            document.getElementById('comment form' + imageId).removeChild(errorString);
 
         await fetch('/submit_comment', {
             method: 'POST',
@@ -255,11 +260,29 @@ function postComment(comment, imageId) {
                 comment: comment,
                 imageId: imageId,
                 commentId: Date.now().toString(),
-                userName: userName
+                userName: localStorage.getItem('userName').split('@')[0]
             })
         }).then(res => res.json())
-            .then(content => writeComments2dom(content, imageId))
-            .catch((error) => console.log(JSON.parse(JSON.stringify(error))))
+            .then(content => {
+                if (!content.message) // contact contains json file with comment
+                    writeComments2dom(content, imageId);
+
+                if (content.message === 'login required')
+                    location.href = '/'
+
+                if (content.message === 'comment empty')    // router return error message
+                {
+                    let pError = document.createElement('p');
+                    pError.setAttribute('id', 'error' + imageId);
+                    pError.innerText = content.message;
+                    document.getElementById('comment form' + imageId).appendChild(pError);
+                }
+
+            }).catch((error) => {
+                let pError = document.createElement('p');
+                pError.innerText = error;
+                document.getElementById('comment form' + imageId).appendChild(pError);
+            })
     })();
 }
 
@@ -683,9 +706,6 @@ function createSpinner() {
  * This function waits for the HTML document to finish loading before running the code inside it.
  */
 document.addEventListener('DOMContentLoaded', () => {
-    // vars to specify limited range for nasa photos
-    let endDate;
-    let startDate;
 
     const loadMoreElement = document.getElementById("load more");
     const dataElement = document.getElementById('data');
@@ -693,14 +713,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const signOutElement = document.getElementById("sign out");
     const submitElement = document.getElementById("submit date");
 
-    // // extract username from ejs page and display welcome message on screen
-    // let text = document.createTextNode('Welcome ' + userName + '! good to see you');
-    // document.getElementById('welcomeText').appendChild(text);
-
     // insert userName to sign-out button
     let p = document.createElement('p');
-    p.innerHTML =  localStorage.getItem('userName');
+    p.innerHTML = localStorage.getItem('userName');
     navbarElement.appendChild(p);
+
+    // vars to specify limited range for nasa photos
+    let endDate;
+    let startDate;
 
     /**
      * This function sets up an event listener for the "sign out" button.
@@ -742,7 +762,6 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(() => showElement(loadMoreElement))
             .finally(() => submitElement.removeChild(document.getElementById("spinner")))
             .catch(err => document.querySelector("#data").innerHTML = "Something went wrong: " + err)
-
     });
     /**
      * This function listens for a click event on the element with the id "load-more".

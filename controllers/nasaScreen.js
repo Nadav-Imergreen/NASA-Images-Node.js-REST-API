@@ -10,12 +10,11 @@ const db = require('../models');
 exports.getNasaPage = (req, res) => {
     //render nasa view if user is longed-in. else, return user to login page
     if (req.session.login)
-    db.Contact.findOne({where: {mail: req.session.email}
+    db.Contact.findOne({where: {mail: req.session.email}, attributes:['firstName']
     }).then(user => res.render('nasa', {name: user.firstName})
-    ).catch();
+    ).catch(err => console.log('name not found ' + err));
     else
         res.redirect('/');
-    //req.session.login? res.render('nasa', {firstName: req.session.firstName}) : res.redirect('/');
 };
 
 exports.leaveNasaPage = (req, res) => {
