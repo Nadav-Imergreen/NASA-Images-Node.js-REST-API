@@ -63,8 +63,10 @@ function status(response) {
         response.json().then(json => {
             if (json.msg)
                 document.querySelector("#data").innerHTML = json.msg;
-            if (json.error.message)
+            else if (json.error.message)
                 document.querySelector("#data").innerHTML = json.error.message;
+            else
+                return Promise.reject(response.text());
         });
 }
 
@@ -244,11 +246,14 @@ function appendComment(imageId) {
  * @param imageId
  */
 function postComment(comment, imageId) {
-    let errorString = document.getElementById('error' + imageId);
+    let postError = document.getElementById('post error' + imageId);
+    let getError = document.getElementById('get error' + imageId);
     (async () => {
 
-        if (errorString)  // remove error message if exist
-            document.getElementById('comment form' + imageId).removeChild(errorString);
+        if (getError)  // remove get comment error message if exist
+                document.getElementById('comment table' + imageId).removeChild(getError);
+        if (postError)  // remove post error message if exist
+            document.getElementById('comment form' + imageId).removeChild(postError);
 
         await fetch('/submit_comment', {
             method: 'POST',
@@ -273,7 +278,7 @@ function postComment(comment, imageId) {
                 if (content.message === 'comment empty')    // router return error message
                 {
                     let pError = document.createElement('p');
-                    pError.setAttribute('id', 'error' + imageId);
+                    pError.setAttribute('id', 'post error' + imageId);
                     pError.innerText = content.message;
                     document.getElementById('comment form' + imageId).appendChild(pError);
                 }
@@ -494,8 +499,13 @@ function writeComments2dom(content, imageId) {
  * and then writes the comments to the DOM.
  */
 function getComments(imageId) {
-    // Asynchronously send a GET request to the server to retrieve the comments immediately for the given image
+    let errorString = document.getElementById('get error' + imageId);
+
     (async () => {
+
+        if (errorString)  // remove error message if exist
+            document.getElementById('comment table' + imageId).removeChild(errorString);
+        // Asynchronously send a GET request to the server to retrieve the comments for the given image
         await fetch('/show_comments/' + imageId, {
             method: 'GET',
             headers: {
@@ -504,8 +514,20 @@ function getComments(imageId) {
             },
             //Convert the response to JSON, and write the comments to DOM
         }).then(res => res.json())
-            .then(content => writeComments2dom(content, imageId))
-            .catch((error) => console.log(JSON.parse(JSON.stringify(error))))
+            .then(content => {
+                if (content.message === 'no comments found') // some error accord
+                {
+                    let pError = document.createElement('p');
+                    pError.setAttribute('id', 'get error' + imageId);
+                    pError.innerText = content.message;
+                    document.getElementById('comment table' + imageId).appendChild(pError);
+                }
+                else
+                    writeComments2dom(content, imageId)
+            }).catch((error) => {
+                let pError = document.createElement('p');
+                pError.innerText = error;
+                document.getElementById('comment table' + imageId).appendChild(pError);})
     })();
 }
 
@@ -525,8 +547,18 @@ function deleteComment(imageId, commentId) {
                 'Content-Type': 'application/json'
             },
         }).then(res => res.json())
-            .then(content => writeComments2dom(content, imageId))
-            .catch((error) => console.log(JSON.parse(JSON.stringify(error))))
+            .then(content => {
+                if (content.message === 'no comments found') // some error accord
+                {
+                    let pError = document.createElement('p');
+                    pError.setAttribute('id', 'get error' + imageId);
+                    pError.innerText = content.message;
+                    document.getElementById('comment table' + imageId).appendChild(pError);
+                    deleteOldComments(imageId);
+                } else
+                    writeComments2dom(content, imageId)
+            })
+            .catch((error) => console.error(error))
     })();
 }
 

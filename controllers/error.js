@@ -8,5 +8,5 @@ exports.get404 = (req, res) => {
 };
 
 exports.get400 = (req, res) => {
-    res.status(400).render('400', { pageTitle: 'comment empty', path : '' });
+    res.status(400).render('400', { pageTitle: 'error', path : '' });
 };
