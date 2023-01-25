@@ -259,7 +259,7 @@ function postComment(comment, imageId) {
                 comment: comment,
                 imageId: imageId,
                 commentId: Date.now().toString(),
-                userName: localStorage.getItem('userName').split('@')[0]
+                userName: localStorage.getItem('userName') ? localStorage.getItem('userName').split('@')[0] : 'no user-name found'
             })
         }).then(res => res.json())
             .then(content => writeComments2dom(content, imageId, content.message))
