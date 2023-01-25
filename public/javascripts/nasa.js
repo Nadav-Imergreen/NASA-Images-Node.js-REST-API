@@ -246,14 +246,8 @@ function appendComment(imageId) {
  * @param imageId
  */
 function postComment(comment, imageId) {
-    let postError = document.getElementById('post error' + imageId);
-    let getError = document.getElementById('get error' + imageId);
-    (async () => {
 
-        if (getError)  // remove get comment error message if exist
-                document.getElementById('comment table' + imageId).removeChild(getError);
-        if (postError)  // remove post error message if exist
-            document.getElementById('comment form' + imageId).removeChild(postError);
+    (async () => {
 
         await fetch('/submit_comment', {
             method: 'POST',
@@ -268,22 +262,8 @@ function postComment(comment, imageId) {
                 userName: localStorage.getItem('userName').split('@')[0]
             })
         }).then(res => res.json())
-            .then(content => {
-                if (!content.message) // contact contains json file with comment
-                    writeComments2dom(content, imageId);
-
-                if (content.message === 'login required')
-                    location.href = '/'
-
-                if (content.message === 'comment empty')    // router return error message
-                {
-                    let pError = document.createElement('p');
-                    pError.setAttribute('id', 'post error' + imageId);
-                    pError.innerText = content.message;
-                    document.getElementById('comment form' + imageId).appendChild(pError);
-                }
-
-            }).catch((error) => {
+            .then(content => writeComments2dom(content, imageId, content.message))
+            .catch((error) => {
                 let pError = document.createElement('p');
                 pError.innerText = error;
                 document.getElementById('comment form' + imageId).appendChild(pError);
@@ -454,42 +434,56 @@ function creteDeleteOption(comment, colInTable) {
  * adding a delete button for each comment
  * @param content
  * @param imageId
+ * @param message
  */
-function writeComments2dom(content, imageId) {
+function writeComments2dom(content, imageId, message) {
     // write the given comments to the DOM for the image with the given ID
     deleteOldComments(imageId);
     let tbody = buildTbody(imageId);
 
-    content.forEach((comment, index) => {
-        // create table row and cells for each comment
-        let tr = document.createElement('tr');
-        let th = document.createElement('th');
-        let td1 = document.createElement('td');
-        let td2 = document.createElement('td');
-        // display comment to html
-        th.innerText = index;
-        td1.innerText = comment.userName;
-        td2.innerText = comment.comment;
+    if (!message)
+        content.forEach((comment, index) => {
+            // create table row and cells for each comment
+            let tr = document.createElement('tr');
+            let th = document.createElement('th');
+            let td1 = document.createElement('td');
+            let td2 = document.createElement('td');
+            // display comment to html
+            th.innerText = index;
+            td1.innerText = comment.userName;
+            td2.innerText = comment.comment;
 
 
-        // add the row and cells to the table body
-        tbody.appendChild(tr);
-        tr.appendChild(th);
-        tr.appendChild(td1);
-        tr.appendChild(td2);
+            // add the row and cells to the table body
+            tbody.appendChild(tr);
+            tr.appendChild(th);
+            tr.appendChild(td1);
+            tr.appendChild(td2);
 
-        // creates a delete button element next to comment if this user write this comment.
-        if (comment.userName === localStorage.getItem('userName').split('@')[0])
-            creteDeleteOption(comment, tr);
+            // creates a delete button element next to comment if this user write this comment.
+            if (comment.userName === localStorage.getItem('userName').split('@')[0])
+                creteDeleteOption(comment, tr);
 
-        // add an event listener to the delete button to delete the comment when clicked
-        let deleteEle = document.getElementById('deleteComment' + comment.commentId)
-        if (deleteEle) {
-            deleteEle.addEventListener("click", () => {
-                deleteComment(imageId, comment.commentId);
-            });
+            // add an event listener to the delete button to delete the comment when clicked
+            let deleteEle = document.getElementById('deleteComment' + comment.commentId)
+            if (deleteEle) {
+                deleteEle.addEventListener("click", () => {
+                    deleteComment(imageId, comment.commentId);
+                });
+            }
+        });
+    else {
+        if (message === 'no comments found') // some error accord
+        {
+            let tr = document.createElement('tr');
+            let th = document.createElement('th');
+            th.innerText = message;
+            tbody.appendChild(tr);
+            tr.appendChild(th);
         }
-    });
+        if (message === 'login required')
+            location.href = '/'
+    }
 }
 
 /**
@@ -499,12 +493,8 @@ function writeComments2dom(content, imageId) {
  * and then writes the comments to the DOM.
  */
 function getComments(imageId) {
-    let errorString = document.getElementById('get error' + imageId);
 
     (async () => {
-
-        if (errorString)  // remove error message if exist
-            document.getElementById('comment table' + imageId).removeChild(errorString);
         // Asynchronously send a GET request to the server to retrieve the comments for the given image
         await fetch('/show_comments/' + imageId, {
             method: 'GET',
@@ -514,20 +504,12 @@ function getComments(imageId) {
             },
             //Convert the response to JSON, and write the comments to DOM
         }).then(res => res.json())
-            .then(content => {
-                if (content.message === 'no comments found') // some error accord
-                {
-                    let pError = document.createElement('p');
-                    pError.setAttribute('id', 'get error' + imageId);
-                    pError.innerText = content.message;
-                    document.getElementById('comment table' + imageId).appendChild(pError);
-                }
-                else
-                    writeComments2dom(content, imageId)
-            }).catch((error) => {
+            .then(content => writeComments2dom(content, imageId, content.message))
+            .catch((error) => {
                 let pError = document.createElement('p');
                 pError.innerText = error;
-                document.getElementById('comment table' + imageId).appendChild(pError);})
+                document.getElementById('comment table' + imageId).appendChild(pError);
+            })
     })();
 }
 
@@ -547,17 +529,7 @@ function deleteComment(imageId, commentId) {
                 'Content-Type': 'application/json'
             },
         }).then(res => res.json())
-            .then(content => {
-                if (content.message === 'no comments found') // some error accord
-                {
-                    let pError = document.createElement('p');
-                    pError.setAttribute('id', 'get error' + imageId);
-                    pError.innerText = content.message;
-                    document.getElementById('comment table' + imageId).appendChild(pError);
-                    deleteOldComments(imageId);
-                } else
-                    writeComments2dom(content, imageId)
-            })
+            .then(content => writeComments2dom(content, imageId, content.message))
             .catch((error) => console.error(error))
     })();
 }
@@ -622,6 +594,7 @@ function buildCommentsTable(imageId) {
 
     // creating basic comment cols
     const commentTable = document.createElement('table');
+    commentTable.classList.add('table');
     commentTable.setAttribute('id', 'comment table' + imageId.toString());
     const thead = document.createElement('thead');
     const tr = document.createElement('tr');
@@ -631,9 +604,9 @@ function buildCommentsTable(imageId) {
     const th4 = document.createElement('th');
 
     // insert text to head of each col
-    th1.innerText = '#-';
-    th2.innerText = 'userID-';
-    th3.innerText = 'comment-';
+    th1.innerText = '#';
+    th2.innerText = 'userID';
+    th3.innerText = 'comment';
     th4.innerText = 'delete';
 
     // append to html data
