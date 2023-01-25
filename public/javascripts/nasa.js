@@ -493,7 +493,6 @@ function writeComments2dom(content, imageId, message) {
  * and then writes the comments to the DOM.
  */
 function getComments(imageId) {
-
     (async () => {
         // Asynchronously send a GET request to the server to retrieve the comments for the given image
         await fetch('/show_comments/' + imageId, {

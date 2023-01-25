@@ -12,9 +12,22 @@ exports.checkSession = (req, res, next) => {
 
 /**
  * Immediately GET a list of comments for a specific image.
+ * @param req
+ * @param res
  */
 exports.getComments = (req, res) => {
-        sendComments2client(req.params.imageId, res)
+    let Id; // extract image id from req according to req definition
+    req.body.imageId ? Id =  req.body.imageId : Id =  req.params.imageId;
+
+    // Find all comments for the current image and send the updated comments as a response
+    db.Comment.findAll({where: {imageId: Id}, attributes: ['userName', 'comment', 'commentId']})
+        .then(post => {
+            if (post.length >= 1)
+                res.json(post)
+            else
+                res.status(404).send({'message': 'no comments found'});
+            res.end();
+        }).catch((err) => res.status(400).send({'message': err}));
 };
 
 /**
@@ -29,8 +42,8 @@ exports.postComment = (req, res) => {
             userName: req.body.userName,
             imageId: req.body.imageId,
             commentId: req.body.commentId
-        });
-        sendComments2client(req.body.imageId, res)
+        }).then(() => this.getComments(req, res)
+        ).catch((err) => res.send(err));
     } else
         res.status(400).send({'message': 'comment empty'});
 };
@@ -42,22 +55,6 @@ exports.deleteComment = (req, res) => {
 // Find the comment with the specified commentId and delete it
     db.Comment.findOne({where: {commentId: req.params.commentId}})
         .then(comment => comment ? comment.destroy() : res.get404(req, res))// Delete the comment if found
-        .then(() => sendComments2client(req.params.imageId, res))
+        .then(() => this.getComments(req, res))
         .catch((err) => res.send(err));
 };
-
-/**
- *  // Find all comments for the current image and send the updated comments as a response
- * @param postId
- * @param res
- */
-function sendComments2client(postId, res) {
-    db.Comment.findAll({where: {imageId: postId}, attributes: ['userName', 'comment', 'commentId']})
-        .then(post => {
-            if (post.length >= 1)
-                res.json(post)
-            else
-                res.status(404).send({'message': 'no comments found'});
-            res.end();
-        }).catch((err) => res.status(400).send({'message': err}));
-}
