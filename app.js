@@ -30,6 +30,11 @@ app.use(session({
   cookie: {maxAge: 10*60*1000 } // milliseconds!
 }));
 
+app.use((req, res, next) => {
+  res.set('Cache-Control', 'no-store')
+  next()
+});
+
 app.use(adminRouter);
 app.use(usersRouter);
 app.use(commentRouter);
@@ -49,7 +54,6 @@ app.use(function(err, req, res) {
   res.status(err.status || 500);
   res.render('error');
 });
-
 
 
 module.exports = app;
