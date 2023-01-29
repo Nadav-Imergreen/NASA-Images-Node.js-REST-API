@@ -61,8 +61,10 @@ function status(response) {
         return Promise.resolve(response);
     } else
         response.json().then(json => {
-            if (json.msg)
+            if (json.msg) {
                 document.querySelector("#data").innerHTML = json.msg;
+                hideElement(document.getElementById('load more'));
+            }
             else if (json.error.message)
                 document.querySelector("#data").innerHTML = json.error.message;
             else
